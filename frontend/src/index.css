@@ -1,0 +1,21 @@
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  background-color: #f4f4f4;
+  color: #222;
+}
+
+/* Optional nice defaults */
+button {
+  cursor: pointer;
+}
+
+input, select {
+  font-family: inherit;
+}
