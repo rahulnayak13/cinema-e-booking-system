@@ -1,12 +1,15 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-<Navbar />
 
 export default function Login() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -16,46 +19,109 @@ export default function Login() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login form submitted:", formData);
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await fetch("http://localhost:8080/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+      console.log("Login response:", data);
+
+      if (!response.ok) {
+        throw new Error(data.error || "Login failed");
+      }
+      
+      // IMPORTANT: Store token and user data
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+      
+      // Store user info
+      const userData = {
+        email: data.email,
+        role: data.role,
+        active: data.active,
+      };
+      localStorage.setItem("user", JSON.stringify(userData));
+      
+      console.log("Stored in localStorage:", {
+        token: localStorage.getItem("token"),
+        user: localStorage.getItem("user")
+      });
+      
+      // Redirect based on role
+      if (data.role === "ADMIN") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div style={styles.page}>
-      <div style={styles.card}>
-        <h1 style={styles.title}>Login</h1>
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <label style={styles.label}>
-            Email *
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              style={styles.input}
-            />
-          </label>
+    <>
+      <Navbar />
+      <div style={styles.page}>
+        <div style={styles.card}>
+          <h1 style={styles.title}>Login</h1>
+          
+          {error && <div style={styles.error}>{error}</div>}
+          
+          <form onSubmit={handleSubmit} style={styles.form}>
+            <label style={styles.label}>
+              Email
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                style={styles.input}
+              />
+            </label>
 
-          <label style={styles.label}>
-            Password *
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              style={styles.input}
-            />
-          </label>
+            <label style={styles.label}>
+              Password
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                style={styles.input}
+              />
+            </label>
 
-          <button type="submit" style={styles.button}>
-            Log In
-          </button>
-        </form>
+            <button type="submit" disabled={loading} style={styles.button}>
+              {loading ? "Logging in..." : "Login"}
+            </button>
+          </form>
+          
+          <div style={styles.links}>
+            <a href="/forgot-password">Forgot Password?</a>
+            <span> | </span>
+            <a href="/register">Create Account</a>
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -103,8 +169,21 @@ const styles = {
     fontSize: "16px",
     border: "none",
     borderRadius: "8px",
-    cursor: "pointer",
     backgroundColor: "#222",
     color: "white",
+    cursor: "pointer",
+  },
+  error: {
+    backgroundColor: "#fee",
+    color: "crimson",
+    padding: "10px",
+    borderRadius: "8px",
+    marginBottom: "15px",
+    fontSize: "14px",
+  },
+  links: {
+    marginTop: "20px",
+    textAlign: "center",
+    fontSize: "14px",
   },
 };
