@@ -1,4 +1,3 @@
-// src/main/java/com/team17/cinema/entity/User.java
 package com.team17.cinema.entity;
 
 import java.time.LocalDateTime;
@@ -33,6 +32,9 @@ public interface User {
     
     LocalDateTime getResetTokenExpiry();
     void setResetTokenExpiry(LocalDateTime resetTokenExpiry);
+    
+    String getVerificationToken();
+    void setVerificationToken(String verificationToken);
     
     LocalDateTime getCreatedAt();
     LocalDateTime getUpdatedAt();
