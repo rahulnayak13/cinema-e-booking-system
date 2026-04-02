@@ -2,6 +2,7 @@
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import {
+  changePassword,
   getProfile,
   updateProfile,
   getAddress,
@@ -43,6 +44,12 @@ export default function Profile() {
     cardHolderName: "",
     cardNumber: "",
     expiryDate: "",
+  });
+
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
 
   useEffect(() => {
@@ -101,6 +108,11 @@ export default function Profile() {
   const handleCardChange = (e) => {
     const { name, value } = e.target;
     setCardData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleProfileSubmit = async (e) => {
@@ -167,6 +179,33 @@ export default function Profile() {
       await deletePaymentCard(cardId);
       setSuccess("Card deleted");
       loadAllData();
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setError("New passwords do not match");
+      return;
+    }
+
+    if (passwordData.newPassword.length < 8) {
+      setError("New password must be at least 8 characters");
+      return;
+    }
+
+    try {
+      const result = await changePassword({
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+      });
+      setSuccess(result.message || "Password changed successfully");
+      setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
     } catch (err) {
       setError(err.message);
     }
@@ -320,6 +359,51 @@ export default function Profile() {
                     </div>
                   </form>
                 )}
+
+                <hr style={styles.sectionDivider} />
+                <form onSubmit={handlePasswordSubmit} style={styles.form}>
+                  <h3>Change Password</h3>
+
+                  <label style={styles.label}>
+                    Current Password <span style={{ color: "red" }}>*</span>
+                    <input
+                      type="password"
+                      name="currentPassword"
+                      value={passwordData.currentPassword}
+                      onChange={handlePasswordChange}
+                      required
+                      style={styles.input}
+                    />
+                  </label>
+
+                  <label style={styles.label}>
+                    New Password <span style={{ color: "red" }}>*</span>
+                    <input
+                      type="password"
+                      name="newPassword"
+                      value={passwordData.newPassword}
+                      onChange={handlePasswordChange}
+                      required
+                      style={styles.input}
+                    />
+                  </label>
+
+                  <label style={styles.label}>
+                    Confirm New Password <span style={{ color: "red" }}>*</span>
+                    <input
+                      type="password"
+                      name="confirmPassword"
+                      value={passwordData.confirmPassword}
+                      onChange={handlePasswordChange}
+                      required
+                      style={styles.input}
+                    />
+                  </label>
+
+                  <button type="submit" style={styles.saveButton}>
+                    Change Password
+                  </button>
+                </form>
               </div>
             )}
 
@@ -569,6 +653,11 @@ const styles = {
     fontSize: "16px",
     borderRadius: "4px",
     border: "1px solid #ccc",
+  },
+  sectionDivider: {
+    margin: "24px 0",
+    border: 0,
+    borderTop: "1px solid #ddd",
   },
   buttonGroup: {
     display: "flex",

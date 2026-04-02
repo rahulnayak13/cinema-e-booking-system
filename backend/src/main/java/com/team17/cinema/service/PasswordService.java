@@ -50,6 +50,23 @@ public class PasswordService {
         userRepository.save(user);
     }
 
+    @Transactional
+    public void changePassword(String email, String currentPassword, String newPassword) {
+        BaseUser user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new RuntimeException("Current password is incorrect");
+        }
+
+        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+            throw new RuntimeException("New password must be different from the current password");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
     public boolean validateResetToken(String token) {
         return userRepository.findByResetToken(token)
             .map(user -> user.getResetTokenExpiry().isAfter(LocalDateTime.now()))
