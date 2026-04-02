@@ -15,9 +15,11 @@ import java.util.Map;
 public class UserController {
     
     private final ProfileService profileService;
+    private final PasswordService passwordService;
     
     public UserController(ProfileService profileService, PasswordService passwordService) {
         this.profileService = profileService;
+        this.passwordService = passwordService;
     }
     
     @GetMapping("/profile")
@@ -32,6 +34,18 @@ public class UserController {
         String email = authentication.getName();
         profileService.updateProfile(email, request);
         return ResponseEntity.ok(Map.of("message", "Profile updated successfully"));
+    }
+
+    @PutMapping("/password")
+    public ResponseEntity<?> changePassword(Authentication authentication,
+                                            @Valid @RequestBody ChangePasswordRequest request) {
+        try {
+            String email = authentication.getName();
+            passwordService.changePassword(email, request.getCurrentPassword(), request.getNewPassword());
+            return ResponseEntity.ok(Map.of("message", "Password changed successfully"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
     
 }
