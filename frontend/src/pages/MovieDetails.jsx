@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { fetchMovieById } from "../api/movies";
+import { addFavorite, removeFavorite, checkIfFavorite } from "../api/auth";
 
 export default function MovieDetails() {
   const { id } = useParams();
@@ -9,6 +10,8 @@ export default function MovieDetails() {
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favLoading, setFavLoading] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -26,10 +29,45 @@ export default function MovieDetails() {
         if (!cancelled) setLoading(false);
       });
 
+    // Check if user is logged in and if movie is a favorite
+    const token = localStorage.getItem("token");
+    if (token) {
+      checkIfFavorite(id)
+        .then((res) => {
+          if (!cancelled) setIsFavorite(res.isFavorite);
+        })
+        .catch(() => {
+          // Not logged in or error
+        });
+    }
+
     return () => {
       cancelled = true;
     };
   }, [id]);
+
+  const handleFavoriteToggle = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      nav("/login");
+      return;
+    }
+
+    setFavLoading(true);
+    try {
+      if (isFavorite) {
+        await removeFavorite(id);
+        setIsFavorite(false);
+      } else {
+        await addFavorite(id);
+        setIsFavorite(true);
+      }
+    } catch (e) {
+      alert("Error: " + e.message);
+    } finally {
+      setFavLoading(false);
+    }
+  };
 
   if (loading) return <p>Loading…</p>;
   if (err) return <p style={{ color: "crimson" }}>{err}</p>;
@@ -38,12 +76,36 @@ export default function MovieDetails() {
   return (
     <div style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: 18 }}>
       <div>
-        <div style={{ border: "1px solid #eee", borderRadius: 12, overflow: "hidden" }}>
+        <div style={{ border: "1px solid #eee", borderRadius: 12, overflow: "hidden", position: "relative" }}>
           <img
             src={movie.posterUrl}
             alt={movie.title}
             style={{ width: "100%", aspectRatio: "2/3", objectFit: "cover" }}
           />
+          <button
+            onClick={handleFavoriteToggle}
+            disabled={favLoading}
+            title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            style={{
+              position: "absolute",
+              top: "10px",
+              right: "10px",
+              fontSize: "28px",
+              background: "rgba(0,0,0,0.3)",
+              border: "none",
+              borderRadius: "50%",
+              width: "45px",
+              height: "45px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: isFavorite ? "#ff1744" : "#fff",
+              transition: "all 0.3s",
+            }}
+          >
+            {isFavorite ? "❤️" : "🤍"}
+          </button>
         </div>
       </div>
 

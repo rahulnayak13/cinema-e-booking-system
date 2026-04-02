@@ -3,20 +3,30 @@ package com.team17.cinema.service;
 import com.team17.cinema.dto.*;
 import com.team17.cinema.entity.*;
 import com.team17.cinema.repository.UserRepository;
+import com.team17.cinema.repository.UserStatusRepository;
+import com.team17.cinema.security.TokenProvider;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.UUID;
 
 @Service
 public class AuthService {
     
     private final UserRepository userRepository;
+    private final UserStatusRepository userStatusRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TokenProvider tokenProvider;
     
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthService(
+        UserRepository userRepository,
+        UserStatusRepository userStatusRepository,
+        PasswordEncoder passwordEncoder,
+        TokenProvider tokenProvider
+    ) {
         this.userRepository = userRepository;
+        this.userStatusRepository = userStatusRepository;
         this.passwordEncoder = passwordEncoder;
+        this.tokenProvider = tokenProvider;
     }
     
     @Transactional
@@ -31,7 +41,9 @@ public class AuthService {
         customer.setFirstName(request.getFirstName());
         customer.setLastName(request.getLastName());
         customer.setPhone(request.getPhone());
-        customer.setStatus(UserStatus.INACTIVE);
+        UserStatus inactiveStatus = userStatusRepository.findByName("inactive")
+            .orElseThrow(() -> new RuntimeException("Default user status 'inactive' not found"));
+        customer.setStatus(inactiveStatus);
         
         return (Customer) userRepository.save(customer);
     }
@@ -46,7 +58,7 @@ public class AuthService {
         
         String role = user instanceof Admin ? "ADMIN" : "CUSTOMER";
 
-        String token = UUID.randomUUID().toString();
+        String token = tokenProvider.generateToken(user.getEmail());
         return new AuthResponse("Login successful", user.getEmail(), role, true, token);
     }
     

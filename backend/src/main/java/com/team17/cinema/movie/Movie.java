@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import com.team17.cinema.entity.BaseUser;
 
 @Entity
 public class Movie {
@@ -32,6 +33,9 @@ public class Movie {
 
     @ElementCollection
     private List<String> showtimes = new ArrayList<>();
+    
+    @ManyToMany(mappedBy = "favoriteMovies")
+    private List<BaseUser> favoritedByUsers = new ArrayList<>();
 
     public Long getId() { return id; }
 
@@ -61,4 +65,7 @@ public class Movie {
 
     public List<String> getShowtimes() { return showtimes; }
     public void setShowtimes(List<String> showtimes) { this.showtimes = showtimes; }
+    
+    public List<BaseUser> getFavoritedByUsers() { return favoritedByUsers; }
+    public void setFavoritedByUsers(List<BaseUser> favoritedByUsers) { this.favoritedByUsers = favoritedByUsers; }
 }

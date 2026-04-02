@@ -1,7 +1,12 @@
 package com.team17.cinema.entity;
 
+import com.team17.cinema.entity.converter.RoleConverter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import com.team17.cinema.movie.Movie;
 
 @Entity
 @Table(name = "users") // Maps to your existing table
@@ -26,13 +31,22 @@ public abstract class BaseUser implements User {
     
     private String phone;
     
-    @ManyToOne // Change from Enumerated to match your data.sql FK
-    @JoinColumn(name = "user_type_id") 
+    @Convert(converter = RoleConverter.class)
+    @Column(name = "user_type_id")
     private Role role;
     
     @ManyToOne // Change from Enumerated to match your status_id FK
     @JoinColumn(name = "status_id")
     private UserStatus status;
+    
+    @JsonIgnore
+    @ManyToMany
+    @JoinTable(
+        name = "favorites",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "movie_id")
+    )
+    private List<Movie> favoriteMovies = new ArrayList<>();
     
     @Column(name = "verification_token") // New field for email confirmation
     private String verificationToken;
@@ -130,4 +144,7 @@ public abstract class BaseUser implements User {
 
     @Override
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+    
+    public List<Movie> getFavoriteMovies() { return favoriteMovies; }
+    public void setFavoriteMovies(List<Movie> favoriteMovies) { this.favoriteMovies = favoriteMovies; }
 }
