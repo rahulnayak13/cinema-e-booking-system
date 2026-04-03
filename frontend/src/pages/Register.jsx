@@ -44,7 +44,7 @@ export default function Register() {
     
     try {
       const result = await register(formData);
-      setSuccess(result.message || "Registration successful! You can now login.");
+      setSuccess(result.message || "Registration successful! Verify your email to activate your account.");
       // Clear form
       setFormData({
         firstName: "",
@@ -54,9 +54,9 @@ export default function Register() {
         confirmPassword: "",
         phone: "",
       });
-      // Redirect to login after 2 seconds
+      // Redirect to verify-email after 2 seconds
       setTimeout(() => {
-        navigate("/login");
+        navigate(`/verify-email?email=${encodeURIComponent(formData.email)}`);
       }, 2000);
     } catch (err) {
       setError(err.message);

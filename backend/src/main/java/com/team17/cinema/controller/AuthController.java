@@ -88,4 +88,33 @@ public ResponseEntity<?> forgotPassword(@RequestParam String email) {
         response.put("message", "Logged out successfully");
         return ResponseEntity.ok(response);
     }
+    
+    @GetMapping("/verify-email")
+    public ResponseEntity<?> verifyEmail(@RequestParam String token,
+                                         @RequestParam(required = false) String email) {
+        try {
+            authService.verifyEmail(token, email);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Email verified successfully. You can now login.");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+    
+    @PostMapping("/resend-verification")
+    public ResponseEntity<?> resendVerificationEmail(@RequestParam String email) {
+        try {
+            authService.resendVerificationEmail(email);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Verification email sent. Please check your inbox.");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
 }
