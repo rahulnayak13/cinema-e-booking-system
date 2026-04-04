@@ -119,7 +119,8 @@ export async function updateProfile(data) {
     body: JSON.stringify(data),
   });
 
-  const result = await response.json();
+  const text = await response.text();
+  const result = text ? JSON.parse(text) : { message: 'Profile updated successfully' };
   
   if (!response.ok) {
     throw new Error(result.error || 'Failed to update profile');

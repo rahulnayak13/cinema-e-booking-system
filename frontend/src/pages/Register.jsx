@@ -44,7 +44,7 @@ export default function Register() {
     
     try {
       const result = await register(formData);
-      setSuccess(result.message || "Registration successful! Verify your email to activate your account.");
+      setSuccess(result.message || "Registration successful. Please verify your email before logging in.");
       // Clear form
       setFormData({
         firstName: "",

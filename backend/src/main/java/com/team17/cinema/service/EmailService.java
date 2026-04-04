@@ -54,6 +54,23 @@ public class EmailService {
             throw new RuntimeException("Failed to encode verification email", e);
         }
     }
+
+    public void sendProfileUpdatedEmail(BaseUser user) {
+        validateMailConfiguration();
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(fromAddress);
+        message.setTo(user.getEmail());
+        message.setSubject("Your profile information was updated");
+        message.setText("Hello " + user.getFirstName() + ",\n\n"
+            + "This is a confirmation that your personal profile information was updated in the Cinema E-Booking System.\n\n"
+            + "If you made this change, no further action is required.\n"
+            + "If you did not make this change, please reset your password immediately.\n\n"
+            + "Best regards,\n"
+            + "Cinema E-Booking System");
+
+        mailSender.send(message);
+    }
     
     private void validateMailConfiguration() {
         if (smtpUsername == null || smtpUsername.isBlank()) {
