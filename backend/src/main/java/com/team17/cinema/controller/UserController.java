@@ -31,9 +31,13 @@ public class UserController {
     @PutMapping("/profile")
     public ResponseEntity<?> updateProfile(Authentication authentication,
                                           @Valid @RequestBody UpdateProfileRequest request) {
-        String email = authentication.getName();
-        profileService.updateProfile(email, request);
-        return ResponseEntity.ok(Map.of("message", "Profile updated successfully"));
+        try {
+            String email = authentication.getName();
+            profileService.updateProfile(email, request);
+            return ResponseEntity.ok(Map.of("message", "Profile updated successfully"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PutMapping("/password")
