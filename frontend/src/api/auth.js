@@ -58,6 +58,41 @@ export async function logout() {
   return response.ok;
 }
 
+export async function verifyEmail(token, email) {
+  const emailParam = email ? `&email=${encodeURIComponent(email)}` : '';
+  const response = await fetch(`${API_BASE_URL}/auth/verify-email?token=${encodeURIComponent(token)}${emailParam}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  const data = await response.json();
+  
+  if (!response.ok) {
+    throw new Error(data.error || 'Email verification failed');
+  }
+  
+  return data;
+}
+
+export async function resendVerificationEmail(email) {
+  const response = await fetch(`${API_BASE_URL}/auth/resend-verification?email=${encodeURIComponent(email)}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  const data = await response.json();
+  
+  if (!response.ok) {
+    throw new Error(data.error || 'Failed to resend verification email');
+  }
+  
+  return data;
+}
+
 export async function getProfile() {
   const token = localStorage.getItem('token');
   const response = await fetch(`${API_BASE_URL}/user/profile`, {
@@ -84,7 +119,8 @@ export async function updateProfile(data) {
     body: JSON.stringify(data),
   });
 
-  const result = await response.json();
+  const text = await response.text();
+  const result = text ? JSON.parse(text) : { message: 'Profile updated successfully' };
   
   if (!response.ok) {
     throw new Error(result.error || 'Failed to update profile');
