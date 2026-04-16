@@ -101,9 +101,9 @@ INSERT IGNORE INTO `movie` (id, title, description, poster_url, rating, status, 
 (9,'Skyline Sprint','A runner joins an underground rooftop race to save a friend.','https://picsum.photos/seed/skyline/600/900','PG-13','COMING_SOON','https://www.youtube.com/embed/dQw4w9WgXcQ');
 
 CREATE TABLE IF NOT EXISTS `movie_genres` (
-  `movie_id` bigint PRIMARY KEY,
-  `genre` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (movie_id, genre),
+  `movie_id` bigint NOT NULL,
+  `genres` varchar(255) NOT NULL,
+  PRIMARY KEY (movie_id, genres),
 
   CONSTRAINT `FK_genre_movie` FOREIGN KEY (`movie_id`) REFERENCES `movie` (`id`)
 
@@ -116,6 +116,10 @@ CREATE TABLE IF NOT EXISTS `showroom` (
   `name` VARCHAR(100),
   `capacity` INT NOT NULL
 );
+INSERT IGNORE INTO `showroom` (id, name, capacity) VALUES
+(1, 'Screen 1', 100),
+(2, 'Screen 2', 80),
+(3, 'Screen 3', 60);
 
 -- showtimes
 CREATE TABLE IF NOT EXISTS `showtime` (
@@ -132,6 +136,10 @@ CREATE TABLE IF NOT EXISTS `showtime` (
 
   UNIQUE (`showroom_id`, `start_time`) -- prevents conflicts
 );
+INSERT IGNORE INTO `showtime` (movie_id, showroom_id, start_time) VALUES
+(1, 1, '2026-02-26 14:00:00'),
+(1, 2, '2026-02-26 17:00:00'),
+(1, 3, '2026-02-26 20:00:00');
 
 -- seats
 CREATE TABLE IF NOT EXISTS `seat` (

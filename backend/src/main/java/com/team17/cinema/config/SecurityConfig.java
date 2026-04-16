@@ -50,10 +50,12 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/movies").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/movies/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/showrooms").permitAll()
                 // Admin only endpoints
                 .requestMatchers(HttpMethod.POST, "/api/movies").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/movies/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/movies/**").hasRole("ADMIN")
+                .requestMatchers("/api/admin/showtimes/**").hasRole("ADMIN")
                 // All other endpoints require authentication
                 .anyRequest().authenticated()
             );
