@@ -95,19 +95,24 @@ INSERT IGNORE INTO `movie` (id, title, description, poster_url, rating, status, 
 (3,'Midnight Atlas','A mapmaker learns the world changes whenever the ink dries.','https://picsum.photos/seed/atlas/600/900','PG-13','COMING_SOON','https://www.youtube.com/embed/dQw4w9WgXcQ'),
 (4,'Peach State Mysteries','A small-town rumor turns into a big-time whodunit.','https://picsum.photos/seed/peachstate/600/900','PG-13','CURRENTLY_RUNNING','https://www.youtube.com/embed/dQw4w9WgXcQ'),
 (5,'Garden of Giants','Kids discover a greenhouse where plants grow to impossible sizes.','https://picsum.photos/seed/garden/600/900','PG','CURRENTLY_RUNNING','https://www.youtube.com/embed/dQw4w9WgXcQ'),
-(6,'Midnight Atlas','A mapmaker learns the world changes whenever the ink dries.','https://picsum.photos/seed/atlas/600/900','PG-13','COMING_SOON','https://www.youtube.com/embed/dQw4w9WgXcQ'),
-(7,'After the Encore','A singer faces the quiet moments after sudden fame.','https://picsum.photos/seed/encore/600/900','PG','COMING_SOON','https://www.youtube.com/embed/dQw4w9WgXcQ'),
-(8,'Cold Case: Redwood','A detective reopens a case the town wants buried.','https://picsum.photos/seed/redwood/600/900','R','COMING_SOON','https://www.youtube.com/embed/dQw4w9WgXcQ'),
-(9,'Chef’s Table: Fire & Stone','A burnt-out chef restarts with a food truck and stubborn team.','https://picsum.photos/seed/chefs/600/900','PG-13','COMING_SOON','https://www.youtube.com/embed/dQw4w9WgXcQ'),
-(10,'Skyline Sprint','A runner joins an underground rooftop race to save a friend.','https://picsum.photos/seed/skyline/600/900','PG-13','COMING_SOON','https://www.youtube.com/embed/dQw4w9WgXcQ');
+(6,'After the Encore','A singer faces the quiet moments after sudden fame.','https://picsum.photos/seed/encore/600/900','PG','COMING_SOON','https://www.youtube.com/embed/dQw4w9WgXcQ'),
+(7,'Cold Case: Redwood','A detective reopens a case the town wants buried.','https://picsum.photos/seed/redwood/600/900','R','COMING_SOON','https://www.youtube.com/embed/dQw4w9WgXcQ'),
+(8,'Chef’s Table: Fire & Stone','A burnt-out chef restarts with a food truck and stubborn team.','https://picsum.photos/seed/chefs/600/900','PG-13','COMING_SOON','https://www.youtube.com/embed/dQw4w9WgXcQ'),
+(9,'Skyline Sprint','A runner joins an underground rooftop race to save a friend.','https://picsum.photos/seed/skyline/600/900','PG-13','COMING_SOON','https://www.youtube.com/embed/dQw4w9WgXcQ');
 
 CREATE TABLE IF NOT EXISTS `movie_genres` (
-  `movie_id` bigint NOT NULL,
+  `movie_id` bigint AUTO_INCREMENT PRIMARY KEY,
   `genres` varchar(255) DEFAULT NULL,
   CONSTRAINT `FK_genre_movie` FOREIGN KEY (`movie_id`) REFERENCES `movie` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 INSERT IGNORE INTO `movie_genres` VALUES
 (1,'Action'),(1,'Thriller'),(2,'Drama'),(2,'Romance'),(3,'Fantasy');
+
+CREATE TABLE IF NOT EXISTS `showroom` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(100),
+  `capacity` INT NOT NULL
+);
 
 -- showtimes
 CREATE TABLE IF NOT EXISTS `showtime` (
@@ -133,7 +138,7 @@ CREATE TABLE IF NOT EXISTS `seat` (
   `seat_number` INT NOT NULL,
 
   CONSTRAINT `fk_seat_showroom`
-    FOREIGN KEY (`showroom_id`) REFERENCES `showroom`(`id`) ON DELETE CASCADE
+    FOREIGN KEY (`showroom_id`) REFERENCES `showroom`(`id`) ON DELETE CASCADE,
 
   UNIQUE (showroom_id, row_label, seat_number)
 );
@@ -173,7 +178,7 @@ CREATE TABLE IF NOT EXISTS `ticket_type` (
   `name` VARCHAR(50),
   `price` DECIMAL(5,2)
 );
-INSERT INTO ticket_type (name, price) VALUES
+INSERT IGNORE INTO ticket_type (name, price) VALUES
 ('Adult', 12.99),
 ('Child', 8.99),
 ('Senior', 9.99);
