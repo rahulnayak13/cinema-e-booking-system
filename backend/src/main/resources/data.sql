@@ -101,9 +101,12 @@ INSERT IGNORE INTO `movie` (id, title, description, poster_url, rating, status, 
 (9,'Skyline Sprint','A runner joins an underground rooftop race to save a friend.','https://picsum.photos/seed/skyline/600/900','PG-13','COMING_SOON','https://www.youtube.com/embed/dQw4w9WgXcQ');
 
 CREATE TABLE IF NOT EXISTS `movie_genres` (
-  `movie_id` bigint AUTO_INCREMENT PRIMARY KEY,
-  `genres` varchar(255) DEFAULT NULL,
+  `movie_id` bigint PRIMARY KEY,
+  `genre` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (movie_id, genre),
+
   CONSTRAINT `FK_genre_movie` FOREIGN KEY (`movie_id`) REFERENCES `movie` (`id`)
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 INSERT IGNORE INTO `movie_genres` VALUES
 (1,'Action'),(1,'Thriller'),(2,'Drama'),(2,'Romance'),(3,'Fantasy');
