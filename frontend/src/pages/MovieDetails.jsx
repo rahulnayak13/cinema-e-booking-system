@@ -8,6 +8,7 @@ export default function MovieDetails() {
   const nav = useNavigate();
 
   const [movie, setMovie] = useState(null);
+  const [showtimes, setShowtimes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
   const [isFavorite, setIsFavorite] = useState(false);
@@ -28,6 +29,11 @@ export default function MovieDetails() {
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
+
+    fetch(`/api/movies/${id}/showtimes`)
+      .then((r) => r.json())
+      .then((data) => { if (!cancelled) setShowtimes(data); })
+      .catch(() => {});
 
     // Check if user is logged in and if movie is a favorite
     const token = localStorage.getItem("token");
@@ -119,21 +125,29 @@ export default function MovieDetails() {
 
         <h2 style={{ marginTop: 18, marginBottom: 10 }}>Showtimes</h2>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-          {(movie.showtimes || []).map((t) => (
-            <button
-              key={t}
-              onClick={() => nav(`/booking?movieId=${movie.id}&showtime=${encodeURIComponent(t)}`)}
-              style={{
-                padding: "10px 12px",
-                borderRadius: 10,
-                border: "1px solid #ddd",
-                background: "white",
-                cursor: "pointer",
-              }}
-            >
-              {t}
-            </button>
-          ))}
+          {showtimes.length === 0 ? (
+            <p style={{ color: "#999" }}>No showtimes scheduled.</p>
+          ) : (
+            showtimes.map((t) => {
+              const dt = new Date(t.startTime);
+              const label = dt.toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+              return (
+                <button
+                  key={t.id}
+                  onClick={() => nav(`/booking?movieId=${movie.id}&showtimeId=${t.id}&showtime=${encodeURIComponent(t.startTime)}&showroomId=${t.showroomId}`)}
+                  style={{
+                    padding: "10px 12px",
+                    borderRadius: 10,
+                    border: "1px solid #ddd",
+                    background: "white",
+                    cursor: "pointer",
+                  }}
+                >
+                  {label} · Screen {t.showroomId}
+                </button>
+              );
+            })
+          )}
         </div>
 
         <h2 style={{ marginTop: 22, marginBottom: 10 }}>Trailer</h2>

@@ -4,7 +4,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class MovieSeeder implements CommandLineRunner {
@@ -100,7 +102,7 @@ public class MovieSeeder implements CommandLineRunner {
         Movie m = new Movie();
         m.setTitle(title);
         m.setStatus(status);
-        m.setGenres(genres);
+        m.setGenres(new LinkedHashSet<>(genres));
         m.setRating(rating);
         m.setDescription(description);
         m.setPosterUrl(posterUrl);

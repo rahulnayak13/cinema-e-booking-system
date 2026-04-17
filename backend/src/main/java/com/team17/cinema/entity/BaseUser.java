@@ -54,6 +54,9 @@ public abstract class BaseUser implements User {
     private String resetToken;
     private LocalDateTime resetTokenExpiry;
     
+@Column(name = "promotion_subscribed", nullable = false)
+    private boolean promotionSubscribed = false;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
     
@@ -147,4 +150,7 @@ public abstract class BaseUser implements User {
     
     public List<Movie> getFavoriteMovies() { return favoriteMovies; }
     public void setFavoriteMovies(List<Movie> favoriteMovies) { this.favoriteMovies = favoriteMovies; }
+
+    public boolean isPromotionSubscribed() { return promotionSubscribed; }
+    public void setPromotionSubscribed(boolean promotionSubscribed) { this.promotionSubscribed = promotionSubscribed; }
 }
