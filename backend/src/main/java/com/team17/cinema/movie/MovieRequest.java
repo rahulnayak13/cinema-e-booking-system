@@ -11,7 +11,6 @@ public class MovieRequest {
     @NotBlank(message = "Title is required")
     private String title;
     
-    @NotNull(message = "Status is required")
     private MovieStatus status;
     
     private String rating;
@@ -21,6 +20,12 @@ public class MovieRequest {
     private String posterUrl;
     
     private String trailerUrl;
+
+    private String cast;
+
+    private String director;
+
+    private String producer;
     
     private Set<String> genres;
     
@@ -71,6 +76,30 @@ public class MovieRequest {
     
     public void setTrailerUrl(String trailerUrl) {
         this.trailerUrl = trailerUrl;
+    }
+
+    public String getCast() {
+        return cast;
+    }
+
+    public void setCast(String cast) {
+        this.cast = cast;
+    }
+
+    public String getDirector() {
+        return director;
+    }
+
+    public void setDirector(String director) {
+        this.director = director;
+    }
+
+    public String getProducer() {
+        return producer;
+    }
+
+    public void setProducer(String producer) {
+        this.producer = producer;
     }
     
     public Set<String> getGenres() {

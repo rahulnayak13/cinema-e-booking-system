@@ -201,7 +201,7 @@ export default function Booking() {
   const rows = [...new Set(seats.map(s => s.rowLabel))].sort();
 
   return (
-    <div style={{ maxWidth: 680, margin: "0 auto", padding: "24px 16px" }}>
+    <div style={{ maxWidth: 780, margin: "0 auto", padding: "24px 16px" }}>
       <h1 style={{ fontSize: 24, fontWeight: 800, marginBottom: 4 }}>Book Tickets</h1>
       <p style={{ color: "#6b7280", marginBottom: 24 }}>
         {movie ? <strong>{movie.title}</strong> : "Loading..."} · {showtimeLabel.replace("T", " ")}
@@ -235,28 +235,66 @@ export default function Booking() {
       {/* ── STEP 2: Seat Map ── */}
       {step === 1 && (
         <div>
-          <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 16, fontSize: 13 }}>
-            <span><span style={{ display: "inline-block", width: 14, height: 14, background: "#f9fafb", border: "1px solid #d1d5db", borderRadius: 4, marginRight: 4, verticalAlign: "middle" }} />Available</span>
-            <span><span style={{ display: "inline-block", width: 14, height: 14, background: "#1d4ed8", borderRadius: 4, marginRight: 4, verticalAlign: "middle" }} />Selected</span>
-            <span><span style={{ display: "inline-block", width: 14, height: 14, background: "#ef4444", borderRadius: 4, marginRight: 4, verticalAlign: "middle" }} />Taken</span>
+          {/* Legend */}
+          <div style={{ display: "flex", gap: 20, marginBottom: 20, fontSize: 13, justifyContent: "center" }}>
+            <span style={{ display: "flex", alignItems: "center", gap: 6 }}><span style={{ display: "inline-block", width: 16, height: 16, background: "#f9fafb", border: "1px solid #d1d5db", borderRadius: 4 }} />Available</span>
+            <span style={{ display: "flex", alignItems: "center", gap: 6 }}><span style={{ display: "inline-block", width: 16, height: 16, background: "#1d4ed8", borderRadius: 4 }} />Selected</span>
+            <span style={{ display: "flex", alignItems: "center", gap: 6 }}><span style={{ display: "inline-block", width: 16, height: 16, background: "#ef4444", borderRadius: 4 }} />Taken</span>
           </div>
 
-          <div style={{ textAlign: "center", padding: "8px 24px", background: "#f3f4f6", borderRadius: 8, marginBottom: 18, fontSize: 13, color: "#6b7280", fontWeight: 600, letterSpacing: 2 }}>
-            ── SCREEN ──
-          </div>
+          {/* Seat map — centered */}
+          <div style={{ overflowX: "auto", paddingBottom: 8 }}>
+            <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "flex-start", gap: 6 }}>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, overflowX: "auto" }}>
-            {rows.map(row => {
-              const rowSeats = seats.filter(s => s.rowLabel === row).sort((a, b) => a.seatNumber - b.seatNumber);
-              return (
-                <div key={row} style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                  <span style={{ width: 20, fontWeight: 700, color: "#6b7280", fontSize: 13 }}>{row}</span>
-                  {rowSeats.map(seat => (
-                    <SeatButton key={seat.id} seat={seat} selected={selectedSeatIds.has(seat.id)} onClick={() => toggleSeat(seat)} />
-                  ))}
+              {/* SCREEN bar — aligned to seat columns only */}
+              <div style={{ display: "flex", gap: 6 }}>
+                <div style={{ width: 24, flexShrink: 0 }} />{/* spacer matches row label */}
+                <div style={{
+                  flex: 1,
+                  padding: "7px 0",
+                  background: "linear-gradient(180deg, #555 0%, #222 100%)",
+                  color: "#fff",
+                  borderRadius: "8px 8px 2px 2px",
+                  textAlign: "center",
+                  fontSize: 11,
+                  fontWeight: 700,
+                  letterSpacing: 4,
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+                  minWidth: 300,
+                }}>
+                  S C R E E N
                 </div>
-              );
-            })}
+              </div>
+
+              {/* Perspective shadow under screen */}
+              <div style={{ display: "flex", gap: 6, marginBottom: 6 }}>
+                <div style={{ width: 24, flexShrink: 0 }} />
+                <div style={{ flex: 1, height: 6, background: "linear-gradient(180deg, rgba(0,0,0,0.12) 0%, transparent 100%)", borderRadius: "0 0 4px 4px", minWidth: 300 }} />
+              </div>
+
+              {/* Seat rows */}
+              {rows.map(row => {
+                const rowSeats = seats.filter(s => s.rowLabel === row).sort((a, b) => a.seatNumber - b.seatNumber);
+                const half = Math.ceil(rowSeats.length / 2);
+                const leftSeats = rowSeats.slice(0, half);
+                const rightSeats = rowSeats.slice(half);
+                return (
+                  <div key={row} style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                    <span style={{ width: 24, fontWeight: 700, color: "#9ca3af", fontSize: 12, textAlign: "right", flexShrink: 0 }}>{row}</span>
+                    {leftSeats.map(seat => (
+                      <SeatButton key={seat.id} seat={seat} selected={selectedSeatIds.has(seat.id)} onClick={() => toggleSeat(seat)} />
+                    ))}
+                    {/* Center aisle */}
+                    <div style={{ width: 28, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <div style={{ width: 1, height: 28, background: "#e5e7eb" }} />
+                    </div>
+                    {rightSeats.map(seat => (
+                      <SeatButton key={seat.id} seat={seat} selected={selectedSeatIds.has(seat.id)} onClick={() => toggleSeat(seat)} />
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
           <div style={{ marginTop: 16, color: "#6b7280", fontSize: 14 }}>

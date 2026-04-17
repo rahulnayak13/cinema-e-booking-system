@@ -31,6 +31,7 @@ export default function Profile() {
     firstName: "",
     lastName: "",
     phone: "",
+    promotionSubscribed: false,
   });
 
   const [addressData, setAddressData] = useState({
@@ -75,6 +76,7 @@ export default function Profile() {
         firstName: profileData.firstName || "",
         lastName: profileData.lastName || "",
         phone: profileData.phone || "",
+        promotionSubscribed: profileData.promotionSubscribed || false,
       });
 
       setAddress(addressData && Object.keys(addressData).length > 0 ? addressData : null);
@@ -302,7 +304,7 @@ export default function Profile() {
                       <strong>Phone:</strong> <span>{profile?.phone || "Not provided"}</span>
                     </div>
                     <div style={styles.row}>
-                      <strong>Role:</strong> <span>{profile?.role}</span>
+                      <strong>Promotion Emails:</strong> <span>{profile?.promotionSubscribed ? "✅ Subscribed" : "❌ Not subscribed"}</span>
                     </div>
                     <button onClick={() => setIsEditing(true)} style={styles.editButton}>
                       Edit Profile
@@ -343,6 +345,17 @@ export default function Profile() {
                         onChange={handleChange}
                         style={styles.input}
                       />
+                    </label>
+
+                    <label style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16, cursor: "pointer", fontWeight: 500 }}>
+                      <input
+                        type="checkbox"
+                        name="promotionSubscribed"
+                        checked={formData.promotionSubscribed}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, promotionSubscribed: e.target.checked }))}
+                        style={{ width: 18, height: 18, cursor: "pointer" }}
+                      />
+                      Subscribe to promotion emails
                     </label>
 
                     <div style={styles.buttonGroup}>
