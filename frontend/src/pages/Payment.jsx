@@ -108,9 +108,9 @@ export default function Payment() {
             <strong>Seats:</strong> {seats.join(", ")}
           </div>
           <div style={{ fontSize: 13, marginBottom: 8 }}>
-            {tickets.adult > 0 && <div style={{ display: "flex", justifyContent: "space-between" }}><span>{tickets.adult}× Adult</span><span>${(tickets.adult * PRICES.adult).toFixed(2)}</span></div>}
-            {tickets.child > 0 && <div style={{ display: "flex", justifyContent: "space-between" }}><span>{tickets.child}× Child</span><span>${(tickets.child * PRICES.child).toFixed(2)}</span></div>}
-            {tickets.senior > 0 && <div style={{ display: "flex", justifyContent: "space-between" }}><span>{tickets.senior}× Senior</span><span>${(tickets.senior * PRICES.senior).toFixed(2)}</span></div>}
+            {tickets.adult > 0 && <div style={{ display: "flex", justifyContent: "space-between" }}><span>{tickets.adult}× Adult <span style={{ color: "#9ca3af" }}>@ ${PRICES.adult.toFixed(2)} ea.</span></span><span>${(tickets.adult * PRICES.adult).toFixed(2)}</span></div>}
+            {tickets.child > 0 && <div style={{ display: "flex", justifyContent: "space-between" }}><span>{tickets.child}× Child <span style={{ color: "#9ca3af" }}>@ ${PRICES.child.toFixed(2)} ea.</span></span><span>${(tickets.child * PRICES.child).toFixed(2)}</span></div>}
+            {tickets.senior > 0 && <div style={{ display: "flex", justifyContent: "space-between" }}><span>{tickets.senior}× Senior <span style={{ color: "#9ca3af" }}>@ ${PRICES.senior.toFixed(2)} ea.</span></span><span>${(tickets.senior * PRICES.senior).toFixed(2)}</span></div>}
           </div>
           <div style={{ borderTop: "1px solid #f3f4f6", paddingTop: 8, display: "flex", justifyContent: "space-between", fontWeight: 700, fontSize: 15 }}>
             <span>Total</span><span>${subtotal.toFixed(2)}</span>
