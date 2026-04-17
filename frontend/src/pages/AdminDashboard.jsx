@@ -144,10 +144,7 @@ export default function AdminDashboard() {
             {menuItems.map((item) => (
               <div
                 key={item.id}
-                style={{
-                  ...styles.menuCard,
-                  ...styles.comingSoon,
-                }}
+                style={styles.menuCard}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = styles.menuCardHover.backgroundColor;
                   e.currentTarget.style.borderColor = styles.menuCardHover.borderColor;
@@ -165,7 +162,6 @@ export default function AdminDashboard() {
                 <span style={styles.menuIcon}>{item.icon}</span>
                 <div style={styles.menuTitle}>{item.title}</div>
                 <div style={styles.menuDesc}>{item.description}</div>
-                <div style={styles.badge}>Coming Soon</div>
               </div>
             ))}
           </div>

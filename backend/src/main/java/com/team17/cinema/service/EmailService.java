@@ -71,7 +71,26 @@ public class EmailService {
 
         mailSender.send(message);
     }
-    
+
+    public void sendPromotionEmail(BaseUser user, com.team17.cinema.promotion.Promotion promotion) {
+        validateMailConfiguration();
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(fromAddress);
+        message.setTo(user.getEmail());
+        message.setSubject("New Promotion: " + promotion.getTitle());
+        message.setText("Hello " + user.getFirstName() + ",\n\n"
+            + "We have a new promotion for you!\n\n"
+            + promotion.getTitle() + "\n"
+            + (promotion.getDescription() != null ? promotion.getDescription() + "\n\n" : "\n")
+            + "Discount: " + promotion.getDiscountPercent() + "%\n"
+            + "Valid: " + promotion.getStartDate() + " to " + promotion.getEndDate() + "\n\n"
+            + "Best regards,\n"
+            + "Cinema E-Booking System");
+
+        mailSender.send(message);
+    }
+
     private void validateMailConfiguration() {
         if (smtpUsername == null || smtpUsername.isBlank()) {
             throw new RuntimeException("SMTP username is not configured (spring.mail.username)");

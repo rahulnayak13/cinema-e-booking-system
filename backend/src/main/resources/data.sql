@@ -249,6 +249,21 @@ CREATE TABLE IF NOT EXISTS `movie_preferences` (
   CONSTRAINT `movie_preferences_customer_fk` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- promotion_subscribed column (will error harmlessly if column already exists due to continue-on-error=true)
+ALTER TABLE `users` ADD COLUMN `promotion_subscribed` TINYINT(1) NOT NULL DEFAULT 0;
+UPDATE `users` SET `promotion_subscribed` = 1 WHERE id = 2;
+
+-- promotions
+CREATE TABLE IF NOT EXISTS `promotion` (
+  `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+  `title` VARCHAR(255) NOT NULL,
+  `description` VARCHAR(2000),
+  `discount_percent` DOUBLE NOT NULL,
+  `start_date` DATE NOT NULL,
+  `end_date` DATE NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 
 SET FOREIGN_KEY_CHECKS = 1;
