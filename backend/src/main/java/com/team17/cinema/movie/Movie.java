@@ -1,10 +1,12 @@
 package com.team17.cinema.movie;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.team17.cinema.entity.BaseUser;
+import com.team17.cinema.showtime.Showtime;
 
 @Entity
 public class Movie {
@@ -28,11 +30,9 @@ public class Movie {
     @ElementCollection
     private List<String> genres = new ArrayList<>();
 
-    @ElementCollection
-    private List<LocalDate> showDates = new ArrayList<>();
-
-    @ElementCollection
-    private List<String> showtimes = new ArrayList<>();
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Showtime> showtimes = new ArrayList<>();
     
     @ManyToMany(mappedBy = "favoriteMovies")
     private List<BaseUser> favoritedByUsers = new ArrayList<>();
@@ -60,12 +60,19 @@ public class Movie {
     public List<String> getGenres() { return genres; }
     public void setGenres(List<String> genres) { this.genres = genres; }
 
-    public List<LocalDate> getShowDates() { return showDates; }
-    public void setShowDates(List<LocalDate> showDates) { this.showDates = showDates; }
-
-    public List<String> getShowtimes() { return showtimes; }
-    public void setShowtimes(List<String> showtimes) { this.showtimes = showtimes; }
+    public List<Showtime> getShowtimes() { return showtimes; }
+    public void setShowtimes(List<Showtime> showtimes) { this.showtimes = showtimes; }
     
     public List<BaseUser> getFavoritedByUsers() { return favoritedByUsers; }
     public void setFavoritedByUsers(List<BaseUser> favoritedByUsers) { this.favoritedByUsers = favoritedByUsers; }
+
+    public void addShowtime(Showtime showtime) {
+        showtimes.add(showtime);
+        showtime.setMovie(this);
+    }
+    
+    public void removeShowtime(Showtime showtime) {
+        showtimes.remove(showtime);
+        showtime.setMovie(null);
+    }
 }

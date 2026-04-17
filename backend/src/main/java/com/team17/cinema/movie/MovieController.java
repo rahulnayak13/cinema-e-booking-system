@@ -1,5 +1,6 @@
 package com.team17.cinema.movie;
 
+import com.team17.cinema.showtime.ShowtimeRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -8,6 +9,7 @@ import jakarta.validation.Valid;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/movies")
@@ -15,9 +17,11 @@ import java.util.List;
 public class MovieController {
 
     private final MovieRepository repo;
+    private final ShowtimeRepository showtimeRepo;
 
-    public MovieController(MovieRepository repo) {
+    public MovieController(MovieRepository repo, ShowtimeRepository showtimeRepo) {
         this.repo = repo;
+        this.showtimeRepo = showtimeRepo;
     }
 
     // GET /api/movies?status=&q=&genre=&showDate=
@@ -27,6 +31,7 @@ public class MovieController {
             @RequestParam(required = false) String q,
             @RequestParam(required = false) String genre,
             @RequestParam(required = false) String showDate
+            
     ) {
         
         List<Movie> movies = repo.findAll();
@@ -50,9 +55,22 @@ public class MovieController {
         }
 
         if (showDate != null && !showDate.trim().isEmpty()) {
-            LocalDate d = LocalDate.parse(showDate.trim()); // YYYY-MM-DD
+            LocalDate targetDate = LocalDate.parse(showDate.trim());
+            LocalDateTime startOfDay = targetDate.atStartOfDay();
+            LocalDateTime endOfDay = targetDate.plusDays(1).atStartOfDay();
+            
+            // Get all showtimes on the specified date
+            var showtimesOnDate = showtimeRepo.findByStartTimeBetween(startOfDay, endOfDay);
+            
+            // Extract unique movie IDs from those showtimes
+            List<Long> movieIdsWithShowtimes = showtimesOnDate.stream()
+                    .map(st -> st.getMovie().getId())
+                    .distinct()
+                    .toList();
+            
+            // Filter movies to only those with showtimes on the date
             movies = movies.stream()
-                    .filter(m -> m.getShowDates() != null && m.getShowDates().contains(d))
+                    .filter(m -> movieIdsWithShowtimes.contains(m.getId()))
                     .toList();
         }
 
