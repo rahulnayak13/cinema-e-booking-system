@@ -106,7 +106,7 @@ export default function AdminDashboard() {
     {
       id: "promotions",
       icon: "🎉",
-      title: "Promotions",
+      title: "Manage Promotions",
       description: "Create and manage promotional campaigns",
       path: "/admin/promotions",
     },

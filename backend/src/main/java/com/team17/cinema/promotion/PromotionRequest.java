@@ -4,6 +4,7 @@ import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import java.time.LocalDate;
 
 public class PromotionRequest {
@@ -24,6 +25,10 @@ public class PromotionRequest {
     @NotNull(message = "End date is required")
     private LocalDate endDate;
 
+    @NotBlank(message = "Promo code is required")
+    @Pattern(regexp = "^[A-Z0-9_-]{2,20}$", message = "Promo code must be 2-20 uppercase letters/numbers")
+    private String promoCode;
+
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
 
@@ -38,4 +43,7 @@ public class PromotionRequest {
 
     public LocalDate getEndDate() { return endDate; }
     public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
+
+    public String getPromoCode() { return promoCode; }
+    public void setPromoCode(String promoCode) { this.promoCode = promoCode; }
 }

@@ -27,6 +27,9 @@ public class Promotion {
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
 
+    @Column(name = "promo_code", unique = true)
+    private String promoCode;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
@@ -51,6 +54,9 @@ public class Promotion {
 
     public LocalDate getEndDate() { return endDate; }
     public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
+
+    public String getPromoCode() { return promoCode; }
+    public void setPromoCode(String promoCode) { this.promoCode = promoCode; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
 }

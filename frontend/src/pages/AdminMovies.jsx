@@ -9,6 +9,8 @@ function getAuthHeaders() {
   return { "Content-Type": "application/json", Authorization: `Bearer ${token}` };
 }
 
+const FALLBACK_POSTER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='70' viewBox='0 0 50 70'%3E%3Crect width='50' height='70' fill='%23ddd'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='24' fill='%23999'%3E%F0%9F%8E%AC%3C/text%3E%3C/svg%3E";
+
 const STATUS_OPTIONS = ["CURRENTLY_RUNNING", "COMING_SOON"];
 const RATING_OPTIONS = ["G", "PG", "PG-13", "R", "NC-17"];
 const GENRE_OPTIONS = ["Action", "Adventure", "Animation", "Comedy", "Crime", "Documentary", "Drama", "Fantasy", "Horror", "Mystery", "Romance", "Sci-Fi", "Thriller"];
@@ -210,10 +212,9 @@ export default function AdminMovies() {
                   <tr key={m.id}>
                     <td style={styles.td}>
                       {m.posterUrl ? (
-                        <img src={m.posterUrl} alt={m.title} style={styles.posterThumb} />
-                      ) : (
-                        <div style={styles.noImg}>🎬</div>
-                      )}
+                        <img src={m.posterUrl} alt={m.title} style={styles.posterThumb} onError={(e) => { e.target.onerror=null; e.target.style.display='none'; e.target.nextSibling.style.display='flex'; }} />
+                      ) : null}
+                      <div style={{ ...styles.noImg, display: m.posterUrl ? 'none' : 'flex' }}>🎦</div>
                     </td>
                     <td style={styles.td}><strong>{m.title}</strong></td>
                     <td style={styles.td}><span style={styles.badge(m.status)}>{m.status?.replace("_", " ")}</span></td>

@@ -55,6 +55,7 @@ public class PromotionController {
         promotion.setDiscountPercent(request.getDiscountPercent());
         promotion.setStartDate(request.getStartDate());
         promotion.setEndDate(request.getEndDate());
+        promotion.setPromoCode(request.getPromoCode());
 
         Promotion saved = promotionRepository.save(promotion);
 

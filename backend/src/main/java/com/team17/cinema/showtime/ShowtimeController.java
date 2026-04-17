@@ -63,7 +63,7 @@ public class ShowtimeController {
         if (conflict) {
             Map<String, String> error = new HashMap<>();
             error.put("error", "Scheduling conflict! Showroom " + request.getShowroomId() + 
-                      " is already booked at " + request.getStartTime());
+                      " is already booked at " + request.getStartTime().toString().replace("T", " "));
             return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
         }
         

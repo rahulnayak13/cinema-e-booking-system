@@ -2,7 +2,9 @@ package com.team17.cinema.movie;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MovieRequest {
     
@@ -20,7 +22,7 @@ public class MovieRequest {
     
     private String trailerUrl;
     
-    private List<String> genres;
+    private Set<String> genres;
     
     // Getters and Setters
     public String getTitle() {
@@ -71,11 +73,11 @@ public class MovieRequest {
         this.trailerUrl = trailerUrl;
     }
     
-    public List<String> getGenres() {
+    public Set<String> getGenres() {
         return genres;
     }
     
-    public void setGenres(List<String> genres) {
+    public void setGenres(Set<String> genres) {
         this.genres = genres;
     }
 }

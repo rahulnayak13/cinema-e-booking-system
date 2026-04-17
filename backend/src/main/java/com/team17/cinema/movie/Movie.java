@@ -2,7 +2,9 @@ package com.team17.cinema.movie;
 
 import jakarta.persistence.*;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.team17.cinema.entity.BaseUser;
@@ -27,14 +29,17 @@ public class Movie {
     private String posterUrl;
     private String trailerUrl;
 
-    @ElementCollection
-    private List<String> genres = new ArrayList<>();
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "movie_genres", joinColumns = @JoinColumn(name = "movie_id"))
+    @Column(name = "genres")
+    private Set<String> genres = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Showtime> showtimes = new ArrayList<>();
     
     @ManyToMany(mappedBy = "favoriteMovies")
+    @JsonIgnore
     private List<BaseUser> favoritedByUsers = new ArrayList<>();
 
     public Long getId() { return id; }
@@ -57,8 +62,8 @@ public class Movie {
     public String getTrailerUrl() { return trailerUrl; }
     public void setTrailerUrl(String trailerUrl) { this.trailerUrl = trailerUrl; }
 
-    public List<String> getGenres() { return genres; }
-    public void setGenres(List<String> genres) { this.genres = genres; }
+    public Set<String> getGenres() { return genres; }
+    public void setGenres(Set<String> genres) { this.genres = genres; }
 
     public List<Showtime> getShowtimes() { return showtimes; }
     public void setShowtimes(List<Showtime> showtimes) { this.showtimes = showtimes; }

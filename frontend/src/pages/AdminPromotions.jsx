@@ -39,11 +39,13 @@ const styles = {
   infoBox: { backgroundColor: "#e8f4fd", border: "1px solid #3498db", borderRadius: "5px", padding: "10px 14px", fontSize: "13px", color: "#1a6a9a", marginBottom: "16px" },
 };
 
-const initialForm = { title: "", description: "", discountPercent: "", startDate: "", endDate: "" };
+const initialForm = { title: "", description: "", discountPercent: "", startDate: "", endDate: "", promoCode: "" };
 
 function validate(form) {
   const errors = {};
   if (!form.title.trim()) errors.title = "Title is required";
+  if (!form.promoCode.trim()) errors.promoCode = "Promo code is required";
+  else if (!/^[A-Z0-9_-]{2,20}$/.test(form.promoCode.trim())) errors.promoCode = "2-20 uppercase letters, numbers, - or _ only";
   if (!form.discountPercent) errors.discountPercent = "Discount is required";
   else {
     const v = parseFloat(form.discountPercent);
@@ -112,6 +114,7 @@ export default function AdminPromotions() {
           discountPercent: parseFloat(form.discountPercent),
           startDate: form.startDate,
           endDate: form.endDate,
+          promoCode: form.promoCode.trim() || null,
         }),
       });
       if (!res.ok) {
@@ -164,6 +167,7 @@ export default function AdminPromotions() {
               <thead>
                 <tr>
                   <th style={styles.th}>Title</th>
+                  <th style={styles.th}>Promo Code</th>
                   <th style={styles.th}>Discount</th>
                   <th style={styles.th}>Valid From</th>
                   <th style={styles.th}>Valid To</th>
@@ -177,6 +181,7 @@ export default function AdminPromotions() {
                 ) : promotions.map((p) => (
                   <tr key={p.id}>
                     <td style={styles.td}><strong>{p.title}</strong></td>
+                    <td style={styles.td}>{p.promoCode ? <code style={{ background: "#f5f5f5", padding: "2px 6px", borderRadius: 4 }}>{p.promoCode}</code> : "—"}</td>
                     <td style={styles.td}><span style={styles.discountBadge}>{p.discountPercent}% OFF</span></td>
                     <td style={styles.td}>{p.startDate}</td>
                     <td style={styles.td}>{p.endDate}</td>
@@ -208,6 +213,18 @@ export default function AdminPromotions() {
                 placeholder="e.g. Summer Sale"
               />
               {errors.title && <div style={styles.errorMsg}>{errors.title}</div>}
+            </div>
+
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Promo Code * <span style={{ color: "#999", fontWeight: 400 }}>(e.g. SUMMER20)</span></label>
+              <input
+                style={{ ...styles.input, ...(errors.promoCode ? styles.inputError : {}) }}
+                value={form.promoCode}
+                onChange={(e) => { setForm({ ...form, promoCode: e.target.value.toUpperCase() }); setErrors({ ...errors, promoCode: null }); }}
+                placeholder="e.g. SUMMER20"
+                maxLength={20}
+              />
+              {errors.promoCode && <div style={styles.errorMsg}>{errors.promoCode}</div>}
             </div>
 
             <div style={styles.formGroup}>
