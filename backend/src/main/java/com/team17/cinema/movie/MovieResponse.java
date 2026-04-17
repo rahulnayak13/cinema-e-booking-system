@@ -1,6 +1,6 @@
 package com.team17.cinema.movie;
 
-import java.util.List;
+import java.util.Set;
 
 public class MovieResponse {
     private Long id;
@@ -10,7 +10,10 @@ public class MovieResponse {
     private String description;
     private String posterUrl;
     private String trailerUrl;
-    private List<String> genres;
+    private String cast;
+    private String director;
+    private String producer;
+    private Set<String> genres;
     
     // Constructor from Movie entity
     public MovieResponse(Movie movie) {
@@ -21,6 +24,9 @@ public class MovieResponse {
         this.description = movie.getDescription();
         this.posterUrl = movie.getPosterUrl();
         this.trailerUrl = movie.getTrailerUrl();
+        this.cast = movie.getCast();
+        this.director = movie.getDirector();
+        this.producer = movie.getProducer();
         this.genres = movie.getGenres();
     }
     
@@ -52,8 +58,20 @@ public class MovieResponse {
     public String getTrailerUrl() {
         return trailerUrl;
     }
+
+    public String getCast() {
+        return cast;
+    }
+
+    public String getDirector() {
+        return director;
+    }
+
+    public String getProducer() {
+        return producer;
+    }
     
-    public List<String> getGenres() {
+    public Set<String> getGenres() {
         return genres;
     }
 }

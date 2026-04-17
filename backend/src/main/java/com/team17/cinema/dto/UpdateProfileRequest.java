@@ -9,8 +9,10 @@ public class UpdateProfileRequest {
     @NotBlank(message = "Last name is required")
     private String lastName;
     
-    @Pattern(regexp = "^[0-9]{10,15}$", message = "Invalid phone number")
+    @Pattern(regexp = "^$|^[0-9]{10,15}$", message = "Invalid phone number")
     private String phone;
+
+    private Boolean promotionSubscribed;
     
     // Getters and Setters
     public String getFirstName() { return firstName; }
@@ -21,4 +23,7 @@ public class UpdateProfileRequest {
     
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
+
+    public Boolean getPromotionSubscribed() { return promotionSubscribed; }
+    public void setPromotionSubscribed(Boolean promotionSubscribed) { this.promotionSubscribed = promotionSubscribed; }
 }

@@ -3,6 +3,8 @@ import { fetchMovies } from "../api/movies";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
+const FALLBACK_POSTER = "https://placehold.co/300x450/eeeeee/999999?text=No+Image";
+
 function MovieCard({ m }) {
   return (
     <Link
@@ -19,9 +21,10 @@ function MovieCard({ m }) {
     >
       <div style={{ aspectRatio: "2/3", background: "#f5f5f5" }}>
         <img
-          src={m.posterUrl}
+          src={m.posterUrl || FALLBACK_POSTER}
           alt={m.title}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_POSTER; }}
         />
       </div>
       <div style={{ padding: 12 }}>
@@ -173,7 +176,7 @@ export default function Home() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+              gridTemplateColumns: "repeat(auto-fill, minmax(165px, 1fr))",
               gap: 14,
             }}
           >

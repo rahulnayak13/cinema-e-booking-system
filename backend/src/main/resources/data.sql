@@ -22,7 +22,7 @@ INSERT IGNORE INTO `user_types` VALUES (1,'admin'),(2,'customer');
 
 CREATE TABLE IF NOT EXISTS `users` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,  SELECT id, email, first_name, last_name, promotion_subscribed FROM users;
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `email` varchar(255) NOT NULL,
   `first_name` varchar(100) DEFAULT NULL,
@@ -154,6 +154,26 @@ CREATE TABLE IF NOT EXISTS `seat` (
   UNIQUE (showroom_id, row_label, seat_number)
 );
 
+-- Seed seats for each showroom (Screen 1: rows A-J cols 1-10, Screen 2: A-H 1-10, Screen 3: A-F 1-10)
+INSERT IGNORE INTO `seat` (showroom_id, row_label, seat_number)
+SELECT 1, r, n FROM
+  (SELECT 'A' r UNION SELECT 'B' UNION SELECT 'C' UNION SELECT 'D' UNION SELECT 'E'
+   UNION SELECT 'F' UNION SELECT 'G' UNION SELECT 'H' UNION SELECT 'I' UNION SELECT 'J') rws,
+  (SELECT 1 n UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5
+   UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10) nums;
+INSERT IGNORE INTO `seat` (showroom_id, row_label, seat_number)
+SELECT 2, r, n FROM
+  (SELECT 'A' r UNION SELECT 'B' UNION SELECT 'C' UNION SELECT 'D'
+   UNION SELECT 'E' UNION SELECT 'F' UNION SELECT 'G' UNION SELECT 'H') rws,
+  (SELECT 1 n UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5
+   UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10) nums;
+INSERT IGNORE INTO `seat` (showroom_id, row_label, seat_number)
+SELECT 3, r, n FROM
+  (SELECT 'A' r UNION SELECT 'B' UNION SELECT 'C'
+   UNION SELECT 'D' UNION SELECT 'E' UNION SELECT 'F') rws,
+  (SELECT 1 n UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5
+   UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10) nums;
+
 -- bookings
 CREATE TABLE IF NOT EXISTS `booking` (
   `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -248,6 +268,23 @@ CREATE TABLE IF NOT EXISTS `movie_preferences` (
   PRIMARY KEY (`id`),
   CONSTRAINT `movie_preferences_customer_fk` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- promotion_subscribed column (will error harmlessly if column already exists due to continue-on-error=true)
+ALTER TABLE `users` ADD COLUMN `promotion_subscribed` TINYINT(1) NOT NULL DEFAULT 0;
+UPDATE `users` SET `promotion_subscribed` = 1 WHERE id = 2;
+
+-- promotions
+CREATE TABLE IF NOT EXISTS `promotion` (
+  `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+  `title` VARCHAR(255) NOT NULL,
+  `description` VARCHAR(2000),
+  `discount_percent` DOUBLE NOT NULL,
+  `start_date` DATE NOT NULL,
+  `end_date` DATE NOT NULL,
+  `promo_code` VARCHAR(50) UNIQUE,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+ALTER TABLE `promotion` ADD COLUMN `promo_code` VARCHAR(50) UNIQUE;
 
 
 

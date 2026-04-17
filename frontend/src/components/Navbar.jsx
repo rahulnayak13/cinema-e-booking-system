@@ -26,21 +26,37 @@ export default function Navbar() {
     return () => window.removeEventListener("storage", checkLoginStatus);
   }, []);
 
-  const checkLoginStatus = () => {
+  const checkLoginStatus = async () => {
     const token = localStorage.getItem("token");
     const userStr = localStorage.getItem("user");
     
-    console.log("Checking login status:", { token: !!token, userStr });
-    
     if (token && userStr) {
       try {
+        // Validate the token is still accepted by the server
+        const res = await fetch("http://localhost:8080/api/user/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) {
+          // Token is invalid/expired — clear stale session
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          setIsLoggedIn(false);
+          setUserRole(null);
+          return;
+        }
         const user = JSON.parse(userStr);
         setIsLoggedIn(true);
         setUserRole(user.role);
       } catch (e) {
-        console.error("Failed to parse user data", e);
-        setIsLoggedIn(false);
-        setUserRole(null);
+        // Network error — keep existing state to avoid flicker when offline
+        try {
+          const user = JSON.parse(userStr);
+          setIsLoggedIn(true);
+          setUserRole(user.role);
+        } catch {
+          setIsLoggedIn(false);
+          setUserRole(null);
+        }
       }
     } else {
       setIsLoggedIn(false);
@@ -99,7 +115,7 @@ export default function Navbar() {
               Profile
             </Link>
             {userRole === "ADMIN" && (
-              <Link to="/admin" style={navLinkStyle}>
+              <Link to="/admin/dashboard" style={navLinkStyle}>
                 Admin
               </Link>
             )}
