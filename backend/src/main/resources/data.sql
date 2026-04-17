@@ -92,31 +92,119 @@ CREATE TABLE IF NOT EXISTS `movie` (
 INSERT IGNORE INTO `movie` (id, title, description, poster_url, rating, status, trailer_url) VALUES
 (1,'Neon Heist','A high-tech crew pulls one last job in a city that never sleeps.','https://picsum.photos/seed/neonheist/600/900','PG-13','CURRENTLY_RUNNING','https://www.youtube.com/embed/dQw4w9WgXcQ'),
 (2,'Lunar Letters','Two strangers exchange messages through a moon relay.','https://picsum.photos/seed/lunarletters/600/900','PG','CURRENTLY_RUNNING','https://www.youtube.com/embed/dQw4w9WgXcQ'),
-(3,'Midnight Atlas','A mapmaker learns the world changes whenever the ink dries.','https://picsum.photos/seed/atlas/600/900','PG-13','COMING_SOON','https://www.youtube.com/embed/dQw4w9WgXcQ');
+(3,'Midnight Atlas','A mapmaker learns the world changes whenever the ink dries.','https://picsum.photos/seed/atlas/600/900','PG-13','COMING_SOON','https://www.youtube.com/embed/dQw4w9WgXcQ'),
+(4,'Peach State Mysteries','A small-town rumor turns into a big-time whodunit.','https://picsum.photos/seed/peachstate/600/900','PG-13','CURRENTLY_RUNNING','https://www.youtube.com/embed/dQw4w9WgXcQ'),
+(5,'Garden of Giants','Kids discover a greenhouse where plants grow to impossible sizes.','https://picsum.photos/seed/garden/600/900','PG','CURRENTLY_RUNNING','https://www.youtube.com/embed/dQw4w9WgXcQ'),
+(6,'After the Encore','A singer faces the quiet moments after sudden fame.','https://picsum.photos/seed/encore/600/900','PG','COMING_SOON','https://www.youtube.com/embed/dQw4w9WgXcQ'),
+(7,'Cold Case: Redwood','A detective reopens a case the town wants buried.','https://picsum.photos/seed/redwood/600/900','R','COMING_SOON','https://www.youtube.com/embed/dQw4w9WgXcQ'),
+(8,'Chef’s Table: Fire & Stone','A burnt-out chef restarts with a food truck and stubborn team.','https://picsum.photos/seed/chefs/600/900','PG-13','COMING_SOON','https://www.youtube.com/embed/dQw4w9WgXcQ'),
+(9,'Skyline Sprint','A runner joins an underground rooftop race to save a friend.','https://picsum.photos/seed/skyline/600/900','PG-13','COMING_SOON','https://www.youtube.com/embed/dQw4w9WgXcQ');
 
 CREATE TABLE IF NOT EXISTS `movie_genres` (
   `movie_id` bigint NOT NULL,
-  `genres` varchar(255) DEFAULT NULL,
+  `genres` varchar(255) NOT NULL,
+  PRIMARY KEY (movie_id, genres),
+
   CONSTRAINT `FK_genre_movie` FOREIGN KEY (`movie_id`) REFERENCES `movie` (`id`)
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 INSERT IGNORE INTO `movie_genres` VALUES
 (1,'Action'),(1,'Thriller'),(2,'Drama'),(2,'Romance'),(3,'Fantasy');
 
-CREATE TABLE IF NOT EXISTS `movie_show_dates` (
-  `movie_id` bigint NOT NULL,
-  `show_dates` date DEFAULT NULL,
-  CONSTRAINT `FK_show_dates_movie` FOREIGN KEY (`movie_id`) REFERENCES `movie` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-INSERT IGNORE INTO `movie_show_dates` VALUES
-(1,'2026-04-03'),(1,'2026-04-04'),(2,'2026-04-03'),(3,'2026-04-10');
+CREATE TABLE IF NOT EXISTS `showroom` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(100),
+  `capacity` INT NOT NULL
+);
+INSERT IGNORE INTO `showroom` (id, name, capacity) VALUES
+(1, 'Screen 1', 100),
+(2, 'Screen 2', 80),
+(3, 'Screen 3', 60);
 
-CREATE TABLE IF NOT EXISTS `movie_showtimes` (
-  `movie_id` bigint NOT NULL,
-  `showtimes` varchar(255) DEFAULT NULL,
-  CONSTRAINT `FK_showtimes_movie` FOREIGN KEY (`movie_id`) REFERENCES `movie` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-INSERT IGNORE INTO `movie_showtimes` VALUES
-(1,'2:00 PM'),(1,'5:00 PM'),(2,'3:00 PM'),(3,'8:00 PM');
+-- showtimes
+CREATE TABLE IF NOT EXISTS `showtime` (
+  `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+  `movie_id` BIGINT NOT NULL,
+  `showroom_id` INT NOT NULL,
+  `start_time` DATETIME NOT NULL,
+  
+  CONSTRAINT `fk_showtime_movie`
+    FOREIGN KEY (`movie_id`) REFERENCES `movie`(`id`) ON DELETE CASCADE,
+
+  CONSTRAINT `fk_showtime_showroom`
+    FOREIGN KEY (`showroom_id`) REFERENCES `showroom`(`id`) ON DELETE CASCADE,
+
+  UNIQUE (`showroom_id`, `start_time`) -- prevents conflicts
+);
+INSERT IGNORE INTO `showtime` (movie_id, showroom_id, start_time) VALUES
+(1, 1, '2026-02-26 14:00:00'),
+(1, 2, '2026-02-26 17:00:00'),
+(1, 3, '2026-02-26 20:00:00');
+
+-- seats
+CREATE TABLE IF NOT EXISTS `seat` (
+  `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+  `showroom_id` INT NOT NULL,
+  `row_label` CHAR(1) NOT NULL,
+  `seat_number` INT NOT NULL,
+
+  CONSTRAINT `fk_seat_showroom`
+    FOREIGN KEY (`showroom_id`) REFERENCES `showroom`(`id`) ON DELETE CASCADE,
+
+  UNIQUE (showroom_id, row_label, seat_number)
+);
+
+-- bookings
+CREATE TABLE IF NOT EXISTS `booking` (
+  `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+  `user_id` BIGINT,
+  `showtime_id` BIGINT NOT NULL,
+  `total_price` DECIMAL(10,2),
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  CONSTRAINT `fk_booking_user`
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE SET NULL,
+
+  CONSTRAINT `fk_booking_showtime`
+    FOREIGN KEY (`showtime_id`) REFERENCES `showtime`(`id`) ON DELETE CASCADE
+);
+
+-- booking < - > seat composite
+CREATE TABLE IF NOT EXISTS `booking_seat` (
+  `booking_id` BIGINT NOT NULL,
+  `seat_id` BIGINT NOT NULL,
+
+  PRIMARY KEY (`booking_id`, `seat_id`),
+
+  CONSTRAINT `fk_bs_booking`
+    FOREIGN KEY (`booking_id`) REFERENCES `booking`(`id`) ON DELETE CASCADE,
+
+  CONSTRAINT `fk_bs_seat`
+    FOREIGN KEY (`seat_id`) REFERENCES `seat`(`id`) ON DELETE CASCADE
+);
+
+-- ticket types
+CREATE TABLE IF NOT EXISTS `ticket_type` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(50),
+  `price` DECIMAL(5,2)
+);
+INSERT IGNORE INTO ticket_type (name, price) VALUES
+('Adult', 12.99),
+('Child', 8.99),
+('Senior', 9.99);
+
+-- tickets per booking per type
+CREATE TABLE IF NOT EXISTS `booking_ticket` (
+  `booking_id` BIGINT NOT NULL,
+  `ticket_type_id` INT NOT NULL,
+  `quantity` INT NOT NULL,
+
+  PRIMARY KEY (`booking_id`, `ticket_type_id`),
+
+  FOREIGN KEY (`booking_id`) REFERENCES `booking`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`ticket_type_id`) REFERENCES `ticket_type`(`id`)
+);
 
 -- favorites
 CREATE TABLE IF NOT EXISTS `favorites` (
@@ -160,5 +248,7 @@ CREATE TABLE IF NOT EXISTS `movie_preferences` (
   PRIMARY KEY (`id`),
   CONSTRAINT `movie_preferences_customer_fk` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
 
 SET FOREIGN_KEY_CHECKS = 1;

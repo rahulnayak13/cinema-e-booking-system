@@ -5,6 +5,7 @@ import com.team17.cinema.security.JwtTokenFilter;
 import com.team17.cinema.security.TokenProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -45,8 +46,17 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(new JwtTokenFilter(userRepository, tokenProvider), UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(auth -> auth
+                // Public endpoints
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/movies/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/movies").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/movies/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/showrooms").permitAll()
+                // Admin only endpoints
+                .requestMatchers(HttpMethod.POST, "/api/movies").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/movies/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/movies/**").hasRole("ADMIN")
+                .requestMatchers("/api/admin/showtimes/**").hasRole("ADMIN")
+                // All other endpoints require authentication
                 .anyRequest().authenticated()
             );
         

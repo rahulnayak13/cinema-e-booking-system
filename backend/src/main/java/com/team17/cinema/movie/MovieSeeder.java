@@ -105,8 +105,6 @@ public class MovieSeeder implements CommandLineRunner {
         m.setDescription(description);
         m.setPosterUrl(posterUrl);
         m.setTrailerUrl(trailerUrl);
-        m.setShowDates(showDates);
-        m.setShowtimes(showtimes);
         return m;
     }
 }
