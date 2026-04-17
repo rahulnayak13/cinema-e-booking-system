@@ -33,10 +33,6 @@ export default function Payment() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!card.name || card.number.replace(/\s/g, "").length < 16 || card.expiry.length < 5 || card.cvv.length < 3) {
-      setError("Please fill in all payment fields correctly.");
-      return;
-    }
     setError("");
     setSubmitting(true);
 

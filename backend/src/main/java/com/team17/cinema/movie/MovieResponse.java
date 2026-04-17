@@ -10,6 +10,9 @@ public class MovieResponse {
     private String description;
     private String posterUrl;
     private String trailerUrl;
+    private String cast;
+    private String director;
+    private String producer;
     private Set<String> genres;
     
     // Constructor from Movie entity
@@ -21,6 +24,9 @@ public class MovieResponse {
         this.description = movie.getDescription();
         this.posterUrl = movie.getPosterUrl();
         this.trailerUrl = movie.getTrailerUrl();
+        this.cast = movie.getCast();
+        this.director = movie.getDirector();
+        this.producer = movie.getProducer();
         this.genres = movie.getGenres();
     }
     
@@ -51,6 +57,18 @@ public class MovieResponse {
     
     public String getTrailerUrl() {
         return trailerUrl;
+    }
+
+    public String getCast() {
+        return cast;
+    }
+
+    public String getDirector() {
+        return director;
+    }
+
+    public String getProducer() {
+        return producer;
     }
     
     public Set<String> getGenres() {

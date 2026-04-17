@@ -80,6 +80,9 @@ public class MovieService {
         movie.setDescription(request.getDescription());
         movie.setPosterUrl(request.getPosterUrl());
         movie.setTrailerUrl(request.getTrailerUrl());
+        movie.setCast(request.getCast());
+        movie.setDirector(request.getDirector());
+        movie.setProducer(request.getProducer());
         if (request.getGenres() != null) {
             movie.setGenres(request.getGenres());
         }
@@ -96,6 +99,9 @@ public class MovieService {
         movie.setDescription(request.getDescription());
         movie.setPosterUrl(request.getPosterUrl());
         movie.setTrailerUrl(request.getTrailerUrl());
+        movie.setCast(request.getCast());
+        movie.setDirector(request.getDirector());
+        movie.setProducer(request.getProducer());
         if (request.getGenres() != null) {
             movie.setGenres(request.getGenres());
         }

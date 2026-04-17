@@ -36,7 +36,8 @@ public class ProfileService {
         boolean hasChanges =
             !Objects.equals(user.getFirstName(), request.getFirstName())
                 || !Objects.equals(user.getLastName(), request.getLastName())
-                || !Objects.equals(user.getPhone(), request.getPhone());
+                || !Objects.equals(user.getPhone(), request.getPhone())
+                || (request.getPromotionSubscribed() != null && user.isPromotionSubscribed() != request.getPromotionSubscribed());
 
         if (!hasChanges) {
             return user;
@@ -45,6 +46,9 @@ public class ProfileService {
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setPhone(request.getPhone());
+        if (request.getPromotionSubscribed() != null) {
+            user.setPromotionSubscribed(request.getPromotionSubscribed());
+        }
 
         BaseUser savedUser = userRepository.save(user);
         try {

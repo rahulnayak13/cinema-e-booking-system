@@ -22,7 +22,7 @@ INSERT IGNORE INTO `user_types` VALUES (1,'admin'),(2,'customer');
 
 CREATE TABLE IF NOT EXISTS `users` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,  SELECT id, email, first_name, last_name, promotion_subscribed FROM users;
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `email` varchar(255) NOT NULL,
   `first_name` varchar(100) DEFAULT NULL,

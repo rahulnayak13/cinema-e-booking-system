@@ -29,6 +29,10 @@ public class Movie {
     private String posterUrl;
     private String trailerUrl;
 
+    private String cast;
+    private String director;
+    private String producer;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "movie_genres", joinColumns = @JoinColumn(name = "movie_id"))
     @Column(name = "genres")
@@ -61,6 +65,15 @@ public class Movie {
 
     public String getTrailerUrl() { return trailerUrl; }
     public void setTrailerUrl(String trailerUrl) { this.trailerUrl = trailerUrl; }
+
+    public String getCast() { return cast; }
+    public void setCast(String cast) { this.cast = cast; }
+
+    public String getDirector() { return director; }
+    public void setDirector(String director) { this.director = director; }
+
+    public String getProducer() { return producer; }
+    public void setProducer(String producer) { this.producer = producer; }
 
     public Set<String> getGenres() { return genres; }
     public void setGenres(Set<String> genres) { this.genres = genres; }

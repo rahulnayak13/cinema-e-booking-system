@@ -17,11 +17,14 @@ const GENRE_OPTIONS = ["Action", "Adventure", "Animation", "Comedy", "Crime", "D
 
 const initialForm = {
   title: "",
-  status: "CURRENTLY_RUNNING",
-  rating: "PG-13",
+  status: "",
+  rating: "",
   description: "",
   posterUrl: "",
   trailerUrl: "",
+  cast: "",
+  director: "",
+  producer: "",
   genres: [],
 };
 
@@ -118,11 +121,14 @@ export default function AdminMovies() {
     setEditingMovie(movie);
     setForm({
       title: movie.title || "",
-      status: movie.status || "CURRENTLY_RUNNING",
-      rating: movie.rating || "PG-13",
+      status: movie.status || "",
+      rating: movie.rating || "",
       description: movie.description || "",
       posterUrl: movie.posterUrl || "",
       trailerUrl: movie.trailerUrl || "",
+      cast: movie.cast || "",
+      director: movie.director || "",
+      producer: movie.producer || "",
       genres: movie.genres || [],
     });
     setErrors({});
@@ -147,7 +153,8 @@ export default function AdminMovies() {
     try {
       const method = editingMovie ? "PUT" : "POST";
       const url = editingMovie ? `${API}/movies/${editingMovie.id}` : `${API}/movies`;
-      const res = await fetch(url, { method, headers: getAuthHeaders(), body: JSON.stringify(form) });
+      const payload = { ...form, status: form.status || null, rating: form.rating || null };
+      const res = await fetch(url, { method, headers: getAuthHeaders(), body: JSON.stringify(payload) });
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.error || "Request failed");
@@ -255,13 +262,16 @@ export default function AdminMovies() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
               <div style={styles.formGroup}>
                 <label style={styles.label}>Status *</label>
-                <select style={styles.select} value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
+                <select style={{ ...styles.select, ...(errors.status ? styles.inputError : {}) }} value={form.status} onChange={(e) => { setForm({ ...form, status: e.target.value }); setErrors({ ...errors, status: null }); }}>
+                  <option value="">— Select status —</option>
                   {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s.replace("_", " ")}</option>)}
                 </select>
+                {errors.status && <div style={styles.errorMsg}>{errors.status}</div>}
               </div>
               <div style={styles.formGroup}>
                 <label style={styles.label}>Rating</label>
                 <select style={styles.select} value={form.rating} onChange={(e) => setForm({ ...form, rating: e.target.value })}>
+                  <option value="">— Select rating —</option>
                   {RATING_OPTIONS.map((r) => <option key={r} value={r}>{r}</option>)}
                 </select>
               </div>
@@ -298,6 +308,36 @@ export default function AdminMovies() {
                 placeholder="https://www.youtube.com/embed/..."
               />
               {errors.trailerUrl && <div style={styles.errorMsg}>{errors.trailerUrl}</div>}
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px" }}>
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Director</label>
+                <input
+                  style={styles.input}
+                  value={form.director}
+                  onChange={(e) => setForm({ ...form, director: e.target.value })}
+                  placeholder="Director name"
+                />
+              </div>
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Producer</label>
+                <input
+                  style={styles.input}
+                  value={form.producer}
+                  onChange={(e) => setForm({ ...form, producer: e.target.value })}
+                  placeholder="Producer name"
+                />
+              </div>
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Cast</label>
+                <input
+                  style={styles.input}
+                  value={form.cast}
+                  onChange={(e) => setForm({ ...form, cast: e.target.value })}
+                  placeholder="Actor1, Actor2, …"
+                />
+              </div>
             </div>
 
             <div style={styles.formGroup}>
