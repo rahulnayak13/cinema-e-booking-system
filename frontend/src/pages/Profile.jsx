@@ -12,6 +12,7 @@ import {
   addPaymentCard,
   deletePaymentCard,
   getFavorites,
+  removeFavorite,
 } from "../api/auth";
 
 export default function Profile() {
@@ -185,6 +186,21 @@ export default function Profile() {
       setError(err.message);
     }
   };
+
+  const handleRemoveFavorite = async (movieId) => {
+  setError("");
+  setSuccess("");
+
+  try {
+    await removeFavorite(movieId);
+
+    setFavorites((prev) => prev.filter((m) => m.id !== movieId));
+
+    setSuccess("Removed from favorites");
+  } catch (err) {
+    setError(err.message);
+  }
+};
 
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
@@ -588,7 +604,14 @@ export default function Profile() {
                         <img src={movie.posterUrl} alt={movie.title} style={styles.poster} />
                         <h4>{movie.title}</h4>
                         <p style={{ fontSize: "12px" }}>{movie.rating}</p>
+                         <button
+                            onClick={() => handleRemoveFavorite(movie.id)}
+                            style={styles.deleteButton}
+                          >
+                            Remove
+                        </button>
                       </div>
+                      
                     ))}
                   </div>
                 ) : (

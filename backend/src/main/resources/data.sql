@@ -87,9 +87,13 @@ CREATE TABLE IF NOT EXISTS `movie` (
   `rating` varchar(255) DEFAULT NULL,
   `status` enum('COMING_SOON','CURRENTLY_RUNNING') DEFAULT NULL,
   `trailer_url` varchar(255) DEFAULT NULL,
+
+  `cast_members` varchar(255) DEFAULT NULL,
+  `director` varchar(255) DEFAULT NULL,
+  `producer` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-INSERT IGNORE INTO `movie` (id, title, description, poster_url, rating, status, trailer_url) VALUES
+INSERT IGNORE INTO `movie` (id, title, description, poster_url, rating, status, trailer_url, cast_members, director, producer) VALUES
 (1,'Neon Heist','A high-tech crew pulls one last job in a city that never sleeps.','https://picsum.photos/seed/neonheist/600/900','PG-13','CURRENTLY_RUNNING','https://www.youtube.com/embed/dQw4w9WgXcQ'),
 (2,'Lunar Letters','Two strangers exchange messages through a moon relay.','https://picsum.photos/seed/lunarletters/600/900','PG','CURRENTLY_RUNNING','https://www.youtube.com/embed/dQw4w9WgXcQ'),
 (3,'Midnight Atlas','A mapmaker learns the world changes whenever the ink dries.','https://picsum.photos/seed/atlas/600/900','PG-13','COMING_SOON','https://www.youtube.com/embed/dQw4w9WgXcQ'),
