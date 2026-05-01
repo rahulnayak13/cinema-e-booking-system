@@ -585,7 +585,7 @@ export default function Profile() {
                   <div style={styles.favoritesList}>
                     {favorites.map((movie) => (
                       <div key={movie.id} style={styles.favoriteItem}>
-                        <img src={movie.posterUrl} alt={movie.title} style={styles.poster} />
+                        <img src={movie.posterUrl} alt={movie.title} loading="lazy" style={styles.poster} />
                         <h4>{movie.title}</h4>
                         <p style={{ fontSize: "12px" }}>{movie.rating}</p>
                       </div>

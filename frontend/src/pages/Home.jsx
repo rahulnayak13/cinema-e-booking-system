@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { fetchMovies } from "../api/movies";
+import { fetchMovies, getMoviePageContent } from "../api/movies";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 const FALLBACK_POSTER = "https://placehold.co/300x450/eeeeee/999999?text=No+Image";
+const PAGE_SIZE = 12;
 
 function MovieCard({ m }) {
   return (
@@ -23,6 +24,7 @@ function MovieCard({ m }) {
         <img
           src={m.posterUrl || FALLBACK_POSTER}
           alt={m.title}
+          loading="lazy"
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
           onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK_POSTER; }}
         />
@@ -42,6 +44,8 @@ export default function Home() {
   const [q, setQ] = useState("");
   const [genre, setGenre] = useState("");
   const [showDate, setShowDate] = useState("");
+  const [page, setPage] = useState(0);
+  const [pageInfo, setPageInfo] = useState(null);
 
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -54,12 +58,17 @@ export default function Home() {
 
     fetchMovies({
       status: statusTab,
+      page,
+      size: PAGE_SIZE,
       ...(q.trim() ? { q: q.trim() } : {}),
       ...(genre ? { genre } : {}),
       ...(showDate ? { showDate } : {}),
     })
       .then((data) => {
-        if (!cancelled) setMovies(data);
+        if (!cancelled) {
+          setMovies(getMoviePageContent(data));
+          setPageInfo(Array.isArray(data) ? null : data);
+        }
       })
       .catch((e) => {
         if (!cancelled) setErr(e.message || "Failed to load movies");
@@ -71,7 +80,7 @@ export default function Home() {
     return () => {
       cancelled = true;
     };
-  }, [statusTab, q, genre, showDate]);
+  }, [statusTab, q, genre, showDate, page]);
 
   const genreOptions = useMemo(() => {
     const set = new Set();
@@ -90,7 +99,7 @@ export default function Home() {
         {/* Tabs */}
         <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
           <button
-            onClick={() => setStatusTab("CURRENTLY_RUNNING")}
+            onClick={() => { setStatusTab("CURRENTLY_RUNNING"); setPage(0); }}
             style={{
               padding: "8px 12px",
               borderRadius: 10,
@@ -102,7 +111,7 @@ export default function Home() {
             Currently Running
           </button>
           <button
-            onClick={() => setStatusTab("COMING_SOON")}
+            onClick={() => { setStatusTab("COMING_SOON"); setPage(0); }}
             style={{
               padding: "8px 12px",
               borderRadius: 10,
@@ -126,7 +135,7 @@ export default function Home() {
         >
           <input
             value={q}
-            onChange={(e) => setQ(e.target.value)}
+            onChange={(e) => { setQ(e.target.value); setPage(0); }}
             placeholder="Search by title..."
             style={{
               padding: 10,
@@ -137,7 +146,7 @@ export default function Home() {
 
           <select
             value={genre}
-            onChange={(e) => setGenre(e.target.value)}
+            onChange={(e) => { setGenre(e.target.value); setPage(0); }}
             style={{
               padding: 10,
               borderRadius: 10,
@@ -155,7 +164,7 @@ export default function Home() {
           <input
             type="date"
             value={showDate}
-            onChange={(e) => setShowDate(e.target.value)}
+            onChange={(e) => { setShowDate(e.target.value); setPage(0); }}
             style={{
               padding: 10,
               borderRadius: 10,
@@ -173,17 +182,38 @@ export default function Home() {
         )}
 
         {!loading && !err && movies.length > 0 && (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(165px, 1fr))",
-              gap: 14,
-            }}
-          >
-            {movies.map((m) => (
-              <MovieCard key={m.id} m={m} />
-            ))}
-          </div>
+          <>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(165px, 1fr))",
+                gap: 14,
+              }}
+            >
+              {movies.map((m) => (
+                <MovieCard key={m.id} m={m} />
+              ))}
+            </div>
+
+            {pageInfo && pageInfo.totalPages > 1 && (
+              <div style={{ display: "flex", justifyContent: "center", gap: 10, marginTop: 20 }}>
+                <button
+                  onClick={() => setPage((p) => Math.max(0, p - 1))}
+                  disabled={pageInfo.first}
+                  style={{ padding: "8px 12px", borderRadius: 10, border: "1px solid #ddd", background: "white", cursor: pageInfo.first ? "not-allowed" : "pointer" }}
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() => setPage((p) => p + 1)}
+                  disabled={pageInfo.last}
+                  style={{ padding: "8px 12px", borderRadius: 10, border: "1px solid #ddd", background: "white", cursor: pageInfo.last ? "not-allowed" : "pointer" }}
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

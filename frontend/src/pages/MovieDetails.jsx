@@ -88,7 +88,7 @@ export default function MovieDetails() {
         {/* Poster */}
         <div style={{ flexShrink: 0, width: 220, borderRadius: 14, overflow: "hidden", boxShadow: "0 4px 20px rgba(0,0,0,0.15)", position: "relative" }}>
           {movie.posterUrl ? (
-            <img src={movie.posterUrl} alt={movie.title} style={{ width: "100%", aspectRatio: "2/3", objectFit: "cover", display: "block" }} />
+            <img src={movie.posterUrl} alt={movie.title} loading="lazy" style={{ width: "100%", aspectRatio: "2/3", objectFit: "cover", display: "block" }} />
           ) : (
             <div style={{ width: "100%", aspectRatio: "2/3", background: "#f3f4f6", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 64, color: "#ccc" }}>🎬</div>
           )}

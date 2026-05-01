@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { getMoviePageContent } from "../api/movies";
 
 const API = "http://localhost:8080/api";
 
@@ -99,9 +100,9 @@ export default function AdminMovies() {
   async function loadMovies() {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/movies`);
+      const res = await fetch(`${API}/movies?size=500`);
       const data = await res.json();
-      setMovies(data);
+      setMovies(getMoviePageContent(data));
     } catch {
       setAlert({ type: "error", msg: "Failed to load movies" });
     } finally {
@@ -219,7 +220,7 @@ export default function AdminMovies() {
                   <tr key={m.id}>
                     <td style={styles.td}>
                       {m.posterUrl ? (
-                        <img src={m.posterUrl} alt={m.title} style={styles.posterThumb} onError={(e) => { e.target.onerror=null; e.target.style.display='none'; e.target.nextSibling.style.display='flex'; }} />
+                        <img src={m.posterUrl} alt={m.title} loading="lazy" style={styles.posterThumb} onError={(e) => { e.target.onerror=null; e.target.style.display='none'; e.target.nextSibling.style.display='flex'; }} />
                       ) : null}
                       <div style={{ ...styles.noImg, display: m.posterUrl ? 'none' : 'flex' }}>🎦</div>
                     </td>
