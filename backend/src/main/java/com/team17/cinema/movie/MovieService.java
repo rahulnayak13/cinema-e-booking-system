@@ -83,6 +83,7 @@ public class MovieService {
         movie.setCast(request.getCast());
         movie.setDirector(request.getDirector());
         movie.setProducer(request.getProducer());
+        movie.setReviews(request.getReviews());
         if (request.getGenres() != null) {
             movie.setGenres(request.getGenres());
         }
@@ -102,6 +103,7 @@ public class MovieService {
         movie.setCast(request.getCast());
         movie.setDirector(request.getDirector());
         movie.setProducer(request.getProducer());
+        movie.setReviews(request.getReviews());
         if (request.getGenres() != null) {
             movie.setGenres(request.getGenres());
         }

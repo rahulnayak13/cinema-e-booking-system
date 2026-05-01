@@ -26,6 +26,8 @@ public class MovieRequest {
     private String director;
 
     private String producer;
+
+    private String reviews;
     
     private Set<String> genres;
     
@@ -100,6 +102,14 @@ public class MovieRequest {
 
     public void setProducer(String producer) {
         this.producer = producer;
+    }
+
+    public String getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(String reviews) {
+        this.reviews = reviews;
     }
     
     public Set<String> getGenres() {

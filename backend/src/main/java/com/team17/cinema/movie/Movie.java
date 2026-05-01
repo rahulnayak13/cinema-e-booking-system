@@ -32,6 +32,7 @@ public class Movie {
     private String cast;
     private String director;
     private String producer;
+    private String reviews;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "movie_genres", joinColumns = @JoinColumn(name = "movie_id"))
@@ -74,6 +75,9 @@ public class Movie {
 
     public String getProducer() { return producer; }
     public void setProducer(String producer) { this.producer = producer; }
+
+    public String getReviews() { return reviews; }
+    public void setReviews(String reviews) { this.reviews = reviews; }
 
     public Set<String> getGenres() { return genres; }
     public void setGenres(Set<String> genres) { this.genres = genres; }
