@@ -192,6 +192,7 @@ CREATE TABLE IF NOT EXISTS `booking` (
   `user_id` BIGINT,
   `showtime_id` BIGINT NOT NULL,
   `total_price` DECIMAL(10,2),
+  `payment_reference` VARCHAR(64),
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
   CONSTRAINT `fk_booking_user`
@@ -200,6 +201,8 @@ CREATE TABLE IF NOT EXISTS `booking` (
   CONSTRAINT `fk_booking_showtime`
     FOREIGN KEY (`showtime_id`) REFERENCES `showtime`(`id`) ON DELETE CASCADE
 );
+
+ALTER TABLE `booking` ADD COLUMN `payment_reference` VARCHAR(64);
 
 -- booking < - > seat composite
 CREATE TABLE IF NOT EXISTS `booking_seat` (
@@ -236,6 +239,17 @@ CREATE TABLE IF NOT EXISTS `booking_ticket` (
 
   FOREIGN KEY (`booking_id`) REFERENCES `booking`(`id`) ON DELETE CASCADE,
   FOREIGN KEY (`ticket_type_id`) REFERENCES `ticket_type`(`id`)
+);
+
+CREATE TABLE IF NOT EXISTS `booking_ticket_quantity` (
+  `booking_id` BIGINT NOT NULL,
+  `ticket_type` VARCHAR(50) NOT NULL,
+  `quantity` INT NOT NULL,
+
+  PRIMARY KEY (`booking_id`, `ticket_type`),
+
+  CONSTRAINT `fk_booking_ticket_quantity_booking`
+    FOREIGN KEY (`booking_id`) REFERENCES `booking`(`id`) ON DELETE CASCADE
 );
 
 -- favorites

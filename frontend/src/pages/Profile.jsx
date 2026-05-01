@@ -132,6 +132,15 @@ export default function Profile() {
     return amount.toLocaleString(undefined, { style: "currency", currency: "USD" });
   };
 
+  const formatTicketBreakdown = (tickets) => {
+    if (!tickets || Object.keys(tickets).length === 0) return "N/A";
+
+    return Object.entries(tickets)
+      .filter(([, quantity]) => Number(quantity) > 0)
+      .map(([type, quantity]) => `${quantity}x ${type.charAt(0)}${type.slice(1).toLowerCase()}`)
+      .join(", ") || "N/A";
+  };
+
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -664,6 +673,12 @@ export default function Profile() {
                         </div>
                         <div style={styles.row}>
                           <strong>Seats:</strong> <span>{(order.seats || []).join(", ") || "N/A"}</span>
+                        </div>
+                        <div style={styles.row}>
+                          <strong>Tickets:</strong> <span>{formatTicketBreakdown(order.tickets)}</span>
+                        </div>
+                        <div style={styles.row}>
+                          <strong>Payment Ref:</strong> <span>{order.paymentReference || "N/A"}</span>
                         </div>
                         <div style={styles.row}>
                           <strong>Booked On:</strong> <span>{formatDateTime(order.bookedAt)}</span>

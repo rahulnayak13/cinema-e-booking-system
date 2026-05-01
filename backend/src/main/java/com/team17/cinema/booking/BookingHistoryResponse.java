@@ -3,6 +3,7 @@ package com.team17.cinema.booking;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 public class BookingHistoryResponse {
     private Long bookingId;
@@ -11,7 +12,9 @@ public class BookingHistoryResponse {
     private Integer showroomId;
     private LocalDateTime startTime;
     private List<String> seats;
+    private Map<String, Integer> tickets;
     private BigDecimal totalPrice;
+    private String paymentReference;
     private LocalDateTime bookedAt;
 
     public BookingHistoryResponse(
@@ -21,7 +24,9 @@ public class BookingHistoryResponse {
             Integer showroomId,
             LocalDateTime startTime,
             List<String> seats,
+            Map<String, Integer> tickets,
             BigDecimal totalPrice,
+            String paymentReference,
             LocalDateTime bookedAt) {
         this.bookingId = bookingId;
         this.showtimeId = showtimeId;
@@ -29,7 +34,9 @@ public class BookingHistoryResponse {
         this.showroomId = showroomId;
         this.startTime = startTime;
         this.seats = seats;
+        this.tickets = tickets;
         this.totalPrice = totalPrice;
+        this.paymentReference = paymentReference;
         this.bookedAt = bookedAt;
     }
 
@@ -57,8 +64,16 @@ public class BookingHistoryResponse {
         return seats;
     }
 
+    public Map<String, Integer> getTickets() {
+        return tickets;
+    }
+
     public BigDecimal getTotalPrice() {
         return totalPrice;
+    }
+
+    public String getPaymentReference() {
+        return paymentReference;
     }
 
     public LocalDateTime getBookedAt() {

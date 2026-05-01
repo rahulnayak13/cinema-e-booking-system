@@ -9,8 +9,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Owns all booking domain logic: seat validation, conflict checking, persistence,
@@ -68,6 +72,8 @@ public class BookingService {
         booking.setUserId(userId);
         booking.setShowtimeId(request.getShowtimeId());
         booking.setTotalPrice(request.getTotalPrice());
+        booking.setTicketQuantities(sanitizeTickets(request.getTickets()));
+        booking.setPaymentReference(generatePaymentReference());
         booking.setSeats(seats);
 
         Booking saved = bookingRepository.save(booking);
@@ -99,8 +105,29 @@ public class BookingService {
                 showroomId,
                 showtime != null ? showtime.getStartTime() : null,
                 booking.getSeats().stream().map(Seat::getLabel).toList(),
+                booking.getTicketQuantities(),
                 booking.getTotalPrice(),
+                booking.getPaymentReference(),
                 booking.getCreatedAt());
+    }
+
+    private Map<String, Integer> sanitizeTickets(Map<String, Integer> requestedTickets) {
+        Map<String, Integer> sanitized = new LinkedHashMap<>();
+        if (requestedTickets == null) {
+            return sanitized;
+        }
+
+        requestedTickets.forEach((ticketType, quantity) -> {
+            if (ticketType == null || quantity == null || quantity <= 0) {
+                return;
+            }
+            sanitized.put(ticketType.trim().toUpperCase(Locale.ROOT), quantity);
+        });
+        return sanitized;
+    }
+
+    private String generatePaymentReference() {
+        return "PAY-" + UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase(Locale.ROOT);
     }
 
     /**
