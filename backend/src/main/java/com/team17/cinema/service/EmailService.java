@@ -91,6 +91,34 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    public void sendBookingConfirmationEmail(
+            BaseUser user,
+            long bookingId,
+            String movieTitle,
+            String showtimeLabel,
+            String seats,
+            String totalPrice) {
+        validateMailConfiguration();
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(fromAddress);
+        message.setTo(user.getEmail());
+        message.setSubject("Booking Confirmed – " + movieTitle);
+        message.setText(
+            "Hello " + user.getFirstName() + ",\n\n" +
+            "Your booking has been confirmed! Here are your details:\n\n" +
+            "  Booking ID : #" + bookingId + "\n" +
+            "  Movie      : " + movieTitle + "\n" +
+            "  Showtime   : " + showtimeLabel + "\n" +
+            "  Seats      : " + seats + "\n" +
+            "  Total Paid : " + totalPrice + "\n\n" +
+            "Enjoy the show!\n\n" +
+            "Best regards,\n" +
+            "Cinema E-Booking System");
+
+        mailSender.send(message);
+    }
+
     private void validateMailConfiguration() {
         if (smtpUsername == null || smtpUsername.isBlank()) {
             throw new RuntimeException("SMTP username is not configured (spring.mail.username)");

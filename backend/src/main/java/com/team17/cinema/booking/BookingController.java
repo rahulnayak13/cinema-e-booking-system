@@ -3,6 +3,7 @@ package com.team17.cinema.booking;
 import com.team17.cinema.entity.BaseUser;
 import com.team17.cinema.repository.UserRepository;
 import com.team17.cinema.security.TokenProvider;
+import com.team17.cinema.service.EmailService;
 import com.team17.cinema.showtime.Showtime;
 import com.team17.cinema.showtime.ShowtimeRepository;
 import jakarta.validation.Valid;
@@ -25,17 +26,20 @@ public class BookingController {
     private final ShowtimeRepository showtimeRepository;
     private final TokenProvider tokenProvider;
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
     public BookingController(BookingRepository bookingRepository,
                              SeatRepository seatRepository,
                              ShowtimeRepository showtimeRepository,
                              TokenProvider tokenProvider,
-                             UserRepository userRepository) {
+                             UserRepository userRepository,
+                             EmailService emailService) {
         this.bookingRepository = bookingRepository;
         this.seatRepository = seatRepository;
         this.showtimeRepository = showtimeRepository;
         this.tokenProvider = tokenProvider;
         this.userRepository = userRepository;
+        this.emailService = emailService;
     }
 
     @GetMapping("/history")
@@ -107,6 +111,27 @@ public class BookingController {
         booking.setSeats(seats);
 
         Booking saved = bookingRepository.save(booking);
+
+        // Send order confirmation email (best-effort – never fail the booking response)
+        try {
+            BaseUser user = userRepository.findById(userId).orElse(null);
+            if (user != null) {
+                Showtime showtime = showtimeRepository.findById(saved.getShowtimeId()).orElse(null);
+                String movieTitle = (showtime != null && showtime.getMovie() != null)
+                        ? showtime.getMovie().getTitle() : "Unknown Movie";
+                String showtimeLabel = showtime != null
+                        ? showtime.getStartTime().toString() : "N/A";
+                String seatLabels = saved.getSeats().stream()
+                        .map(Seat::getLabel).reduce((a, b) -> a + ", " + b).orElse("N/A");
+                String totalPrice = saved.getTotalPrice() != null
+                        ? "$" + saved.getTotalPrice().toPlainString() : "N/A";
+                emailService.sendBookingConfirmationEmail(
+                        user, saved.getId(), movieTitle, showtimeLabel, seatLabels, totalPrice);
+            }
+        } catch (Exception e) {
+            // Log but do not fail the request
+            System.err.println("Booking confirmation email failed: " + e.getMessage());
+        }
 
         Map<String, Object> response = new HashMap<>();
         response.put("bookingId", saved.getId());
