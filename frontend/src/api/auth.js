@@ -269,6 +269,21 @@ export async function deletePaymentCard(cardId) {
   return text ? JSON.parse(text) : { message: 'Card deleted' };
 }
 
+export async function getOrderHistory() {
+  const token = localStorage.getItem('token');
+  const response = await fetch(`${API_BASE_URL}/bookings/history`, {
+    headers: {
+      'Authorization': token ? `Bearer ${token}` : '',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch order history');
+  }
+
+  return response.json();
+}
+
 // Favorite APIs
 export async function getFavorites() {
   const token = localStorage.getItem('token');
