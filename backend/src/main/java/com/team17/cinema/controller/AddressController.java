@@ -10,7 +10,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/address")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class AddressController {
     
     private final AddressService addressService;

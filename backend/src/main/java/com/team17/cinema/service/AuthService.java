@@ -5,6 +5,8 @@ import com.team17.cinema.entity.*;
 import com.team17.cinema.repository.UserRepository;
 import com.team17.cinema.repository.UserStatusRepository;
 import com.team17.cinema.security.TokenProvider;
+
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,8 +76,13 @@ public class AuthService {
         return new AuthResponse("Login successful", user.getEmail(), role, true, token);
     }
     
-    public void logout(String email) {
-        // For stateless JWT, logout is handled client-side
+    public void logout(String token) {
+        if (token != null && !token.isEmpty()) {
+            // Revoke/invalidate the token
+            tokenProvider.revokeToken(token);
+        }
+        // Clear security context
+        SecurityContextHolder.clearContext();
     }
     
     @Transactional

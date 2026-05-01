@@ -25,4 +25,16 @@ public class UserQueryService {
     public long getTotalUserCount() {
         return userRepository.count();
     }
+
+    public long getTotalAdminCount() {
+        return userRepository.countByRole(Role.ADMIN);
+    }
+
+    public long getTotalCustomerCount() {
+        return userRepository.countByRole(Role.CUSTOMER);
+    }
+
+    public long getActiveUserCount() {
+        return userRepository.countByStatus_Name("active");
+    }
 }
