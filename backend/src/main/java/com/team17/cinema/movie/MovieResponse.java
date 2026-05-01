@@ -13,6 +13,7 @@ public class MovieResponse {
     private String cast;
     private String director;
     private String producer;
+    private String reviews;
     private Set<String> genres;
     
     // Constructor from Movie entity
@@ -27,6 +28,7 @@ public class MovieResponse {
         this.cast = movie.getCast();
         this.director = movie.getDirector();
         this.producer = movie.getProducer();
+        this.reviews = movie.getReviews();
         this.genres = movie.getGenres();
     }
     
@@ -69,6 +71,10 @@ public class MovieResponse {
 
     public String getProducer() {
         return producer;
+    }
+
+    public String getReviews() {
+        return reviews;
     }
     
     public Set<String> getGenres() {

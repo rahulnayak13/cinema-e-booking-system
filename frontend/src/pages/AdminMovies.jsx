@@ -25,6 +25,7 @@ const initialForm = {
   cast: "",
   director: "",
   producer: "",
+  reviews: "",
   genres: [],
 };
 
@@ -129,6 +130,7 @@ export default function AdminMovies() {
       cast: movie.cast || "",
       director: movie.director || "",
       producer: movie.producer || "",
+      reviews: movie.reviews || "",
       genres: movie.genres || [],
     });
     setErrors({});
@@ -338,6 +340,16 @@ export default function AdminMovies() {
                   placeholder="Actor1, Actor2, …"
                 />
               </div>
+            </div>
+
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Reviews</label>
+              <input
+                style={styles.input}
+                value={form.reviews}
+                onChange={(e) => setForm({ ...form, reviews: e.target.value })}
+                placeholder="Review summary or description"
+              />
             </div>
 
             <div style={styles.formGroup}>

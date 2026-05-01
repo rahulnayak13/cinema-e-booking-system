@@ -125,7 +125,7 @@ export default function MovieDetails() {
             <p style={{ lineHeight: 1.7, color: "#333", fontSize: 15, marginBottom: 16, maxWidth: 600 }}>{movie.description}</p>
           )}
 
-          {(movie.director || movie.producer || movie.cast) && (
+          {(movie.director || movie.producer || movie.cast || movie.reviews) && (
             <div style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 14 }}>
               {movie.director && (
                 <div><span style={{ fontWeight: 700, color: "#555", minWidth: 72, display: "inline-block" }}>Director</span> {movie.director}</div>
@@ -135,6 +135,9 @@ export default function MovieDetails() {
               )}
               {movie.cast && (
                 <div><span style={{ fontWeight: 700, color: "#555", minWidth: 72, display: "inline-block" }}>Cast</span> {movie.cast}</div>
+              )}
+              {movie.reviews && (
+                <div><span style={{ fontWeight: 700, color: "#555", minWidth: 72, display: "inline-block" }}>Reviews</span> {movie.reviews}</div>
               )}
             </div>
           )}
