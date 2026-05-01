@@ -11,7 +11,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class AuthController {
     
     private final AuthService authService;
@@ -57,7 +56,6 @@ public ResponseEntity<?> forgotPassword(@RequestParam String email) {
         Map<String, String> response = new HashMap<>();
         response.put("message", "If an account exists with this email, a reset link has been sent.");
         // For development - return token so you can test without email
-        response.put("debug_token", token);
         return ResponseEntity.ok(response);
     } catch (Exception e) {
         Map<String, String> error = new HashMap<>();
@@ -82,8 +80,15 @@ public ResponseEntity<?> forgotPassword(@RequestParam String email) {
     }
     
     @PostMapping("/logout")
-    public ResponseEntity<?> logout() {
-        authService.logout(null);
+    public ResponseEntity<?> logout(@RequestHeader(value = "Authorization", required = false) String authHeader) {
+        String token = null;
+        // Extract Bearer token from Authorization header
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7);
+        }
+        
+        authService.logout(token);
+        
         Map<String, String> response = new HashMap<>();
         response.put("message", "Logged out successfully");
         return ResponseEntity.ok(response);

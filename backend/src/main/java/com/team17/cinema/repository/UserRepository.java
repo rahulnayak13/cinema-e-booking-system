@@ -1,6 +1,7 @@
 package com.team17.cinema.repository;
 
 import com.team17.cinema.entity.BaseUser;
+import com.team17.cinema.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
@@ -9,4 +10,6 @@ public interface UserRepository extends JpaRepository<BaseUser, Long> {
     Optional<BaseUser> findByResetToken(String resetToken);
     Optional<BaseUser> findByVerificationToken(String verificationToken);
     boolean existsByEmail(String email);
+    long countByRole(Role role);
+    long countByStatus_Name(String statusName);
 }
