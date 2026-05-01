@@ -4,6 +4,8 @@ import { fetchMovieById } from "../api/movies";
 
 const API = "http://localhost:8080";
 const PRICES = { adult: 12.5, child: 9.0, senior: 10.0 };
+const TAX_RATE = 0.08;             // 8% sales tax
+const BOOKING_FEE_PER_TICKET = 1.50; // online booking fee per ticket
 
 const STEP_LABELS = ["Tickets", "Seats", "Summary", "Payment"];
 
@@ -94,6 +96,9 @@ export default function Booking() {
 
   const totalTickets = tickets.adult + tickets.child + tickets.senior;
   const subtotal = tickets.adult * PRICES.adult + tickets.child * PRICES.child + tickets.senior * PRICES.senior;
+  const bookingFee = parseFloat((totalTickets * BOOKING_FEE_PER_TICKET).toFixed(2));
+  const tax = parseFloat((subtotal * TAX_RATE).toFixed(2));
+  const grandTotal = parseFloat((subtotal + bookingFee + tax).toFixed(2));
 
   // --- Step 1 → 2: load seat map ---
   const goToSeats = async () => {
@@ -152,7 +157,10 @@ export default function Booking() {
         showtimeLabel: showtimeLabel.replace("T", " "),
         seats: selectedSeatObjects.map(s => s.label),
         tickets,
-        subtotal,
+        ticketSubtotal: subtotal,
+        bookingFee,
+        tax,
+        subtotal: grandTotal,
         email: confirmEmail,
         showtimeId: Number(showtimeId),
         seatIds: Array.from(selectedSeatIds),
@@ -174,7 +182,7 @@ export default function Booking() {
       const res = await fetch(`${API}/api/bookings`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ showtimeId: Number(showtimeId), seatIds: Array.from(selectedSeatIds), tickets, totalPrice: subtotal }),
+        body: JSON.stringify({ showtimeId: Number(showtimeId), seatIds: Array.from(selectedSeatIds), tickets, totalPrice: grandTotal }),
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error || "Booking failed."); setSubmitting(false); return; }
@@ -224,7 +232,7 @@ export default function Booking() {
             <Counter label="Senior" price={PRICES.senior} value={tickets.senior} onChange={(v) => setTickets(t => ({ ...t, senior: v }))} />
           </div>
           <div style={{ marginTop: 20, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontWeight: 700, fontSize: 18 }}>Subtotal: ${subtotal.toFixed(2)}</span>
+            <span style={{ fontWeight: 700, fontSize: 18 }}>Estimated Total: ${grandTotal.toFixed(2)}</span>
             <button onClick={goToSeats} disabled={seatsLoading || totalTickets === 0} style={{ padding: "10px 28px", background: totalTickets === 0 ? "#d1d5db" : "#1d4ed8", color: "white", border: "none", borderRadius: 8, cursor: totalTickets === 0 ? "not-allowed" : "pointer", fontWeight: 600, fontSize: 15 }}>
               {seatsLoading ? "Loading seats…" : "Choose Seats →"}
             </button>
@@ -337,9 +345,19 @@ export default function Booking() {
               {tickets.senior > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14 }}><span>{tickets.senior}× Senior <span style={{ color: "#9ca3af" }}>@ ${PRICES.senior.toFixed(2)} ea.</span></span><span>${(tickets.senior * PRICES.senior).toFixed(2)}</span></div>}
             </div>
 
-            <div style={{ borderTop: "1px solid #f3f4f6", paddingTop: 12, display: "flex", justifyContent: "space-between", fontWeight: 700, fontSize: 17 }}>
-              <span>Total</span>
-              <span>${subtotal.toFixed(2)}</span>
+            <div style={{ borderTop: "1px solid #f3f4f6", paddingTop: 12 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, color: "#6b7280", marginBottom: 4 }}>
+                <span>Tickets subtotal</span><span>${subtotal.toFixed(2)}</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, color: "#6b7280", marginBottom: 4 }}>
+                <span>Online booking fee ({totalTickets}× $1.50)</span><span>${bookingFee.toFixed(2)}</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, color: "#6b7280", marginBottom: 8 }}>
+                <span>Tax (8%)</span><span>${tax.toFixed(2)}</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 700, fontSize: 17 }}>
+                <span>Total</span><span>${grandTotal.toFixed(2)}</span>
+              </div>
             </div>
           </div>
 
