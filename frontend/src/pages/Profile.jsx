@@ -11,6 +11,7 @@ import {
   getPaymentCards,
   addPaymentCard,
   deletePaymentCard,
+  getOrderHistory,
   getFavorites,
   removeFavorite,
 } from "../api/auth";
@@ -20,6 +21,7 @@ export default function Profile() {
   const [profile, setProfile] = useState(null);
   const [address, setAddress] = useState(null);
   const [paymentCards, setPaymentCards] = useState([]);
+  const [orderHistory, setOrderHistory] = useState([]);
   const [favorites, setFavorites] = useState([]);
 
   const [activeTab, setActiveTab] = useState("info");
@@ -65,10 +67,11 @@ export default function Profile() {
 
   const loadAllData = async () => {
     try {
-      const [profileData, addressData, cardsData, favoritesData] = await Promise.all([
+      const [profileData, addressData, cardsData, orderHistoryData, favoritesData] = await Promise.all([
         getProfile(),
         getAddress().catch(() => null),
         getPaymentCards().catch(() => []),
+        getOrderHistory().catch(() => []),
         getFavorites().catch(() => []),
       ]);
 
@@ -86,6 +89,7 @@ export default function Profile() {
       }
 
       setPaymentCards(cardsData || []);
+      setOrderHistory(orderHistoryData || []);
       setFavorites(favoritesData || []);
     } catch (err) {
       setError("Failed to load data");
@@ -116,6 +120,16 @@ export default function Profile() {
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
     setPasswordData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const formatDateTime = (value) => {
+    if (!value) return "N/A";
+    return new Date(value).toLocaleString();
+  };
+
+  const formatCurrency = (value) => {
+    const amount = Number(value || 0);
+    return amount.toLocaleString(undefined, { style: "currency", currency: "USD" });
   };
 
   const handleProfileSubmit = async (e) => {
@@ -299,6 +313,15 @@ export default function Profile() {
               }}
             >
               Favorites ({favorites.length})
+            </button>
+            <button
+              onClick={() => setActiveTab("orders")}
+              style={{
+                ...styles.tabButton,
+                ...(activeTab === "orders" ? styles.tabActive : {}),
+              }}
+            >
+              Order History ({orderHistory.length})
             </button>
           </div>
 
@@ -619,6 +642,41 @@ export default function Profile() {
                 )}
               </div>
             )}
+
+            {activeTab === "orders" && (
+              <div>
+                <h3>My Order History</h3>
+                {orderHistory.length > 0 ? (
+                  <div style={styles.orderList}>
+                    {orderHistory.map((order) => (
+                      <div key={order.bookingId} style={styles.orderItem}>
+                        <div style={styles.row}>
+                          <strong>Booking ID:</strong> <span>#{order.bookingId}</span>
+                        </div>
+                        <div style={styles.row}>
+                          <strong>Movie:</strong> <span>{order.movieTitle || "Unknown Movie"}</span>
+                        </div>
+                        <div style={styles.row}>
+                          <strong>Showtime:</strong> <span>{formatDateTime(order.startTime)}</span>
+                        </div>
+                        <div style={styles.row}>
+                          <strong>Showroom:</strong> <span>{order.showroomId ?? "N/A"}</span>
+                        </div>
+                        <div style={styles.row}>
+                          <strong>Seats:</strong> <span>{(order.seats || []).join(", ") || "N/A"}</span>
+                        </div>
+                        <div style={styles.row}>
+                          <strong>Booked On:</strong> <span>{formatDateTime(order.bookedAt)}</span>
+                        </div>
+                        <div style={styles.orderPrice}>{formatCurrency(order.totalPrice)}</div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p>No orders yet. Book a movie to see your history here.</p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -762,6 +820,25 @@ const styles = {
     borderRadius: "4px",
     marginBottom: "10px",
     border: "1px solid #ddd",
+  },
+  orderList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
+    marginTop: "12px",
+  },
+  orderItem: {
+    border: "1px solid #ddd",
+    borderRadius: "6px",
+    padding: "14px",
+    backgroundColor: "#fafafa",
+  },
+  orderPrice: {
+    marginTop: "8px",
+    fontSize: "18px",
+    fontWeight: "700",
+    color: "#1d4ed8",
+    textAlign: "right",
   },
   favoritesList: {
     display: "grid",
