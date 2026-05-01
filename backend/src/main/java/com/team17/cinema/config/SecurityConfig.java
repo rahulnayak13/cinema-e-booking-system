@@ -54,6 +54,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/movies/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/showrooms").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/showtimes/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/recommendations/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/recommendations/**").permitAll()
                 // Admin only endpoints
                 .requestMatchers(HttpMethod.POST, "/api/movies").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/movies/**").hasRole("ADMIN")
