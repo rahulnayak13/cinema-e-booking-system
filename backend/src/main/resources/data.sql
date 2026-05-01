@@ -113,7 +113,15 @@ CREATE TABLE IF NOT EXISTS `movie_genres` (
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 INSERT IGNORE INTO `movie_genres` VALUES
-(1,'Action'),(1,'Thriller'),(2,'Drama'),(2,'Romance'),(3,'Fantasy');
+(1,'Action'),(1,'Thriller'),
+(2,'Drama'),(2,'Romance'),
+(3,'Fantasy'),
+(4,'Mystery'),(4,'Thriller'),
+(5,'Comedy'),(5,'Family'),
+(6,'Drama'),(6,'Music'),
+(7,'Mystery'),(7,'Thriller'),
+(8,'Drama'),(8,'Comedy'),
+(9,'Action'),(9,'Sport');
 
 CREATE TABLE IF NOT EXISTS `showroom` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
